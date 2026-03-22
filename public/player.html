@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>TUBEBOX PLAYER</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <style>
+        body { background: #000; color: #0ff; font-family: 'VT323', monospace; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
+        .phone-frame { width: 360px; height: 750px; border: 10px solid #222; border-radius: 40px; display: flex; flex-direction: column; align-items: center; padding: 25px; box-sizing: border-box; background: #050505; position: relative; }
+        .disc { width: 180px; height: 180px; border-radius: 50%; border: 6px dashed #f0f; animation: spin 4s linear infinite; animation-play-state: paused; margin-top: 20px; position: relative; }
+        .disc::after { content:''; position: absolute; top:50%; left:50%; width:30px; height:30px; background:#222; border:2px solid #f0f; border-radius:50%; transform:translate(-50%, -50%); }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        #title { margin-top: 25px; font-size: 1.5rem; color: #f0f; text-align: center; height: 70px; text-transform: uppercase; overflow: hidden; }
+        .controls { display: flex; gap: 15px; margin-bottom: 20px; }
+        .btn { background: #000; border: 2px solid #0ff; color: #0ff; padding: 10px 15px; font-family: 'VT323'; font-size: 1.1rem; cursor: pointer; }
+        .player-playlist { width: 100%; border-top: 1px solid #333; padding-top: 15px; flex-grow: 1; overflow-y: auto; }
+        .p-item { color: #0ff; font-size: 0.9rem; margin-bottom: 5px; opacity: 0.5; display: flex; justify-content: space-between; }
+        .p-item.active { opacity: 1; color: #fff; text-shadow: 0 0 8px #0ff; }
+        #yt-player { position: absolute; top: -5000px; }
+        #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; cursor: pointer; text-align: center; }
+    </style>
+</head>
+<body>
+    <div id="overlay" onclick="unlock()">
+        <h1 style="color:#f0f; font-size:3rem;">TUBEBOX</h1>
+        <p style="color:#0ff; font-size:1.5rem;">TOCCA PER ACCENDERE</p>
+    </div>
+    <div class="phone-frame">
+        <div id="disc" class="disc"></div>
+        <div id="title">IN ATTESA...</div>
+        <div class="controls">
+            <button class="btn" onclick="toggle()">PAUSA</button>
+            <button class="btn" onclick="next()">SALTA ></button>
+        </div>
+        <div id="player-playlist" class="player-playlist"></div>
+        <div id="yt-player"></div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        const socket = io();
+        let player, ready = false, currentId = null;
+
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('yt-player', {
+                events: {
+                    'onReady': () => { ready = true; if(currentId) load(currentId); },
+                    'onStateChange': (e) => {
+                        if (e.data === YT.PlayerState.ENDED) socket.emit('next-track');
+                        document.getElementById('disc').style.animationPlayState = (e.data === 1) ? 'running' : 'paused';
+                    }
+                }
+            });
+        }
+
+        socket.on('play-song', (song) => {
+            if (!song) return;
+            document.getElementById('title').innerText = song.title;
+            currentId = song.id;
+            if(ready) load(song.id);
+        });
+
+        socket.on('update-queue', (queue) => {
+            document.getElementById('player-playlist').innerHTML = queue.map((s, i) => `
+                <div class="p-item ${i===0 ? 'active' : ''}">
+                    <span>${i+1}. ${s.title.substring(0,22)}</span>
+                    <span>${s.duration}</span>
+                </div>
+            `).join('');
+        });
+
+        socket.on('stop-player', () => {
+            document.getElementById('title').innerText = "FINE PLAYLIST";
+            if(ready) player.stopVideo();
+        });
+
+        function load(id) { player.loadVideoById(id); player.playVideo(); }
+        function toggle() { if(player.getPlayerState() === 1) player.pauseVideo(); else player.playVideo(); }
+        function next() { socket.emit('next-track'); }
+        function unlock() { document.getElementById('overlay').style.display='none'; if(ready && currentId) player.playVideo(); }
+    </script>
+</body>
+</html>
