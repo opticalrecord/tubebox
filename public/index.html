@@ -9,22 +9,22 @@
         body { background: #0a0a0a; color: #ffb000; font-family: 'VT323', monospace; margin: 0; display: flex; justify-content: center; }
         .remote-case { width: 100%; max-width: 400px; height: 100vh; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; }
         .status-bar { background: #1a1100; border: 1px solid #ffb000; padding: 10px; margin-bottom: 15px; text-align: center; }
-        #eta { font-size: 2rem; color: #fff; font-weight: bold; }
-        .title-container { display: flex; align-items: center; justify-content: center; margin: 15px 0; font-size: 2.8rem; font-weight: bold; }
-        .vu-meter-o { width: 30px; height: 30px; border: 3px solid #ffb000; border-radius: 50%; position: relative; margin: 0 4px; background: #111; display: flex; align-items: center; justify-content: center; top: 4px; }
-        .needle { width: 2px; height: 15px; background: #ffb000; transform-origin: bottom center; transform: rotate(-45deg); transition: transform 0.1s; position: absolute; bottom: 50%; }
+        #eta { font-size: 2.2rem; color: #fff; font-weight: bold; }
+        .title-container { display: flex; align-items: center; justify-content: center; margin: 15px 0; font-size: 2.8rem; font-weight: bold; letter-spacing: 1px; }
+        .vu-meter-o { width: 32px; height: 32px; border: 3px solid #ffb000; border-radius: 50%; position: relative; margin: 0 4px; background: #111; display: flex; align-items: center; justify-content: center; top: 4px; }
+        .needle { width: 2px; height: 16px; background: #ffb000; transform-origin: bottom center; transform: rotate(-45deg); transition: transform 0.1s; position: absolute; bottom: 50%; }
         .search-box { display: flex; gap: 5px; margin-bottom: 20px; }
         input { flex: 1; background: #111; border: 2px solid #ffb000; color: #ffb000; padding: 12px; font-family: 'VT323'; font-size: 1.2rem; outline: none; }
         button { background: #ffb000; border: none; padding: 10px 15px; font-family: 'VT323'; font-weight: bold; color: #000; cursor: pointer; }
-        #results { flex: 1; overflow-y: auto; margin-bottom: 15px; }
+        #results { flex: 1; overflow-y: auto; margin-bottom: 15px; border-bottom: 1px dashed #333; }
         .song-card { border: 1px solid #444; padding: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; cursor: pointer; }
-        .playlist-area { height: 120px; overflow-y: auto; opacity: 0.7; font-size: 0.9rem; border-top: 1px solid #333; padding-top: 10px; }
+        .playlist-area { height: 120px; overflow-y: auto; opacity: 0.7; font-size: 0.9rem; padding-top: 10px; }
     </style>
 </head>
 <body>
     <div class="remote-case">
         <div class="status-bar">
-            <div style="font-size: 0.8rem; opacity: 0.8;">TIME TO NEXT:</div>
+            <div style="font-size: 0.8rem; opacity: 0.8;">FINE BRANO TRA:</div>
             <div id="eta">00:00</div>
         </div>
         <div class="title-container">
@@ -32,9 +32,10 @@
         </div>
         <div class="search-box">
             <input type="text" id="term" placeholder="CERCA UN BRANO...">
-            <button onclick="doSearch()">GO</button>
+            <button onclick="doSearch()">OK</button>
         </div>
         <div id="results"></div>
+        <div style="font-size: 0.8rem; border-bottom: 1px solid #ffb000;">CODA DI RIPRODUZIONE:</div>
         <div id="playlist" class="playlist-area"></div>
     </div>
 
@@ -42,6 +43,7 @@
     <script>
         const socket = io();
 
+        // Ricezione movimento VU-Meter
         socket.on('vibe-check', (level) => {
             const a1 = (level - 45) + (Math.random() * 15);
             const a2 = (level - 45) + (Math.random() * 15);
@@ -49,6 +51,7 @@
             document.getElementById('vu-2').style.transform = `rotate(${a2}deg)`;
         });
 
+        // Ricezione Countdown reale
         socket.on('sync-countdown', (sec) => {
             const m = Math.floor(sec / 60);
             const s = sec % 60;
@@ -72,7 +75,8 @@
         }
 
         socket.on('update-queue', (data) => {
-            document.getElementById('playlist').innerHTML = (data.list || []).map((s,i) => `
+            const list = data.list || [];
+            document.getElementById('playlist').innerHTML = list.map((s,i) => `
                 <div style="display:flex; justify-content:space-between; margin-bottom:5px; opacity:${i===0?1:0.5}">
                     <span>${i+1}. ${s.title.substring(0,25)}</span>
                     <span>${i===0 ? 'NOW' : s.duration}</span>
