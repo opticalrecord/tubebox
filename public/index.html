@@ -10,7 +10,7 @@
         .remote-case { width: 100%; max-width: 400px; height: 100vh; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; }
         .status-bar { background: #1a1100; border: 1px solid #ffb000; padding: 10px; margin-bottom: 15px; text-align: center; }
         #eta { font-size: 2.2rem; color: #fff; font-weight: bold; }
-        .title-container { display: flex; align-items: center; justify-content: center; margin: 15px 0; font-size: 2.8rem; font-weight: bold; letter-spacing: 1px; }
+        .title-container { display: flex; align-items: center; justify-content: center; margin: 15px 0; font-size: 2.8rem; font-weight: bold; }
         .vu-meter-o { width: 32px; height: 32px; border: 3px solid #ffb000; border-radius: 50%; position: relative; margin: 0 4px; background: #111; display: flex; align-items: center; justify-content: center; top: 4px; }
         .needle { width: 2px; height: 16px; background: #ffb000; transform-origin: bottom center; transform: rotate(-45deg); transition: transform 0.1s; position: absolute; bottom: 50%; }
         .search-box { display: flex; gap: 5px; margin-bottom: 20px; }
@@ -28,14 +28,13 @@
             <div id="eta">00:00</div>
         </div>
         <div class="title-container">
-            Y<div class="vu-meter-o"><div id="vu-1" class="needle"></div></div>UTUB<div class="vu-meter-o"><div id="vu-2" class="needle"></div></div>X
+            YOUTUB<div class="vu-meter-o"><div id="vu-1" class="needle"></div></div>X
         </div>
         <div class="search-box">
-            <input type="text" id="term" placeholder="CERCA UN BRANO...">
+            <input type="text" id="term" placeholder="CERCA...">
             <button onclick="doSearch()">OK</button>
         </div>
         <div id="results"></div>
-        <div style="font-size: 0.8rem; border-bottom: 1px solid #ffb000;">CODA DI RIPRODUZIONE:</div>
         <div id="playlist" class="playlist-area"></div>
     </div>
 
@@ -43,15 +42,11 @@
     <script>
         const socket = io();
 
-        // Ricezione movimento VU-Meter
         socket.on('vibe-check', (level) => {
             const a1 = (level - 45) + (Math.random() * 15);
-            const a2 = (level - 45) + (Math.random() * 15);
             document.getElementById('vu-1').style.transform = `rotate(${a1}deg)`;
-            document.getElementById('vu-2').style.transform = `rotate(${a2}deg)`;
         });
 
-        // Ricezione Countdown reale
         socket.on('sync-countdown', (sec) => {
             const m = Math.floor(sec / 60);
             const s = sec % 60;
@@ -75,9 +70,8 @@
         }
 
         socket.on('update-queue', (data) => {
-            const list = data.list || [];
-            document.getElementById('playlist').innerHTML = list.map((s,i) => `
-                <div style="display:flex; justify-content:space-between; margin-bottom:5px; opacity:${i===0?1:0.5}">
+            document.getElementById('playlist').innerHTML = (data.list || []).map((s,i) => `
+                <div style="display:flex; justify-content:space-between; opacity:${i===0?1:0.5}">
                     <span>${i+1}. ${s.title.substring(0,25)}</span>
                     <span>${i===0 ? 'NOW' : s.duration}</span>
                 </div>
