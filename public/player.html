@@ -8,11 +8,10 @@
         body { background: #050505; color: #ffb000; font-family: 'VT323', monospace; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
         .radio-case { width: 360px; height: 700px; background: #1a1a1a; border: 8px solid #111; border-radius: 20px; display: flex; flex-direction: column; padding: 20px; box-sizing: border-box; }
         .display-lcd { background: #111; border: 3px solid #333; padding: 15px; border-radius: 5px; margin-bottom: 20px; min-height: 80px; }
-        #title { font-size: 1.6rem; text-transform: uppercase; overflow: hidden; }
+        #title { font-size: 1.6rem; text-transform: uppercase; }
         .visualizer { height: 260px; display: flex; justify-content: center; align-items: center; background: #0c0c0c; border-radius: 10px; margin-bottom: 20px; }
-        .disc { width: 210px; height: 210px; border-radius: 50%; border: 4px solid #ffb000; animation: spin 5s linear infinite; animation-play-state: paused; background-size: cover; background-position: center; mask-image: radial-gradient(circle, transparent 10%, black 11%); -webkit-mask-image: radial-gradient(circle, transparent 10%, black 11%); }
+        .disc { width: 210px; height: 210px; border-radius: 50%; border: 4px solid #ffb000; animation: spin 5s linear infinite; animation-play-state: paused; background-size: cover; background-position: center; -webkit-mask-image: radial-gradient(circle, transparent 10%, black 11%); }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .playlist { flex-grow: 1; overflow-y: auto; font-size: 1rem; border-top: 1px solid #333; padding-top: 10px; }
         #yt-player { position: absolute; top: -5000px; }
         #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 100; display: flex; justify-content: center; align-items: center; cursor: pointer; }
     </style>
@@ -22,27 +21,20 @@
     <div class="radio-case">
         <div class="display-lcd"><div id="title">READY...</div></div>
         <div class="visualizer"><div id="disc" class="disc"></div></div>
-        <div class="playlist" id="player-playlist"></div>
         <div id="yt-player"></div>
     </div>
-
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
         const socket = io();
         let player, ready = false, currentId = null;
 
-        // INVIO DATI AUDIO E TEMPO AL SERVER
         setInterval(() => {
             if (player && player.getPlayerState() === 1) {
-                // Audio level per VU-meter
                 socket.emit('audio-level', Math.floor(Math.random() * 50) + 30);
-                // Tempo rimanente per Countdown
                 const remaining = Math.floor(player.getDuration() - player.getCurrentTime());
                 socket.emit('time-left', remaining);
-            } else {
-                socket.emit('audio-level', 0);
-            }
+            } else { socket.emit('audio-level', 0); }
         }, 200);
 
         function onYouTubeIframeAPIReady() {
@@ -61,19 +53,7 @@
             if (!song) return;
             document.getElementById('title').innerText = song.title;
             if(song.image) document.getElementById('disc').style.backgroundImage = `url('${song.image}')`;
-            currentId = song.id;
-            if(ready) load(song.id);
-        });
-
-        socket.on('update-queue', (data) => {
-            const list = document.getElementById('player-playlist');
-            const disc = document.getElementById('disc');
-            const size = Math.max(100, 210 - (data.list.length * 6));
-            disc.style.width = size + 'px'; disc.style.height = size + 'px';
-            list.innerHTML = data.list.map((s, i) => `
-                <div style="display:flex;justify-content:space-between;opacity:${i===0?1:0.5}">
-                    <span>${i+1}. ${s.title.substring(0,20)}</span><span>${i===0?'NOW':s.duration}</span>
-                </div>`).join('');
+            currentId = song.id; if(ready) load(song.id);
         });
 
         function load(id) { player.loadVideoById(id); player.playVideo(); }
