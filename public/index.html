@@ -3,73 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TUBEBOX REMOTE</title>
+    <title>AMBER REMOTE</title>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
-        body { background: #000; color: #f0f; font-family: 'VT323', monospace; margin: 0; display: flex; justify-content: center; }
-        .phone-frame { width: 100%; max-width: 400px; height: 100vh; background: #080808; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; }
-        .pixel-title { font-size: 3rem; text-align: center; color: #f0f; text-shadow: 3px 3px 0 #440044; margin: 10px 0; }
-        .search-box { display: flex; gap: 8px; margin-bottom: 15px; }
-        input { flex: 1; background: #000; border: 2px solid #0ff; color: #0ff; padding: 12px; font-family: 'VT323'; font-size: 1.2rem; outline: none; }
-        .btn-search { background: #0ff; border: none; padding: 10px 15px; font-family: 'VT323'; font-size: 1.1rem; cursor: pointer; font-weight: bold; }
-        #results { flex: 1; overflow-y: auto; border-bottom: 2px dashed #333; margin-bottom: 15px; }
-        .song-card { border: 1px solid #0ff; padding: 10px; margin-bottom: 10px; cursor: pointer; color: #0ff; }
-        .playlist-title { color: #f0f; font-size: 1.4rem; border-bottom: 1px solid #f0f; margin-bottom: 10px; }
-        .playlist-area { height: 180px; overflow-y: auto; }
-        .q-item { display: flex; justify-content: space-between; color: #aaa; margin-bottom: 5px; }
-        #toast { position: fixed; top: -50px; left: 50%; transform: translateX(-50%); background: #f0f; color: #000; padding: 10px 20px; transition: 0.5s; z-index: 100; font-weight: bold; }
-        #toast.active { top: 20px; }
+        body { background: #0a0a0a; color: #ffb000; font-family: 'VT323', monospace; margin: 0; display: flex; justify-content: center; }
+        .remote-case { width: 100%; max-width: 400px; height: 100vh; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; }
+        
+        /* Display info in alto */
+        .status-bar { 
+            background: #1a1100; border: 1px solid #ffb000; padding: 10px; 
+            margin-bottom: 15px; border-radius: 4px; text-align: center;
+        }
+        #eta { font-size: 1.5rem; font-weight: bold; color: #fff; text-shadow: 0 0 5px #ffb000; }
+
+        h1 { text-align: center; font-size: 2.5rem; margin: 5px 0; text-shadow: 0 0 10px #ffb000; }
+        .search-box { display: flex; gap: 5px; margin-bottom: 20px; }
+        input { flex: 1; background: #111; border: 2px solid #ffb000; color: #ffb000; padding: 12px; font-family: 'VT323'; font-size: 1.2rem; outline: none; }
+        button { background: #ffb000; border: none; padding: 10px 15px; font-family: 'VT323'; font-weight: bold; cursor: pointer; }
+        
+        #results { flex: 1; overflow-y: auto; border-bottom: 1px dashed #444; margin-bottom: 15px; }
+        .song-card { border: 1px solid #444; padding: 10px; margin-bottom: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .song-card:active { background: #ffb000; color: #000; }
+        
+        .playlist-area { height: 120px; overflow-y: auto; opacity: 0.7; font-size: 0.9rem; }
+        #toast { position: fixed; bottom: -60px; left: 50%; transform: translateX(-50%); background: #ffb000; color: #000; padding: 10px 30px; transition: 0.4s; z-index: 1000; font-weight: bold; border: 1px solid #fff; }
+        #toast.show { bottom: 20px; }
     </style>
 </head>
 <body>
-    <div id="toast">BRANO AGGIUNTO!</div>
-    <div class="phone-frame">
-        <div class="pixel-title">TUBEBOX</div>
-        <div class="search-box">
-            <input type="text" id="term" placeholder="CERCA CANZONE...">
-            <button class="btn-search" onclick="doSearch()">CERCA</button>
+    <div id="toast">INVIATO ALLA RADIO...</div>
+    <div class="remote-case">
+        <div class="status-bar">
+            <div style="font-size: 0.7rem; opacity: 0.8;">TEMPO TOTALE IN CODA:</div>
+            <div id="eta">00:00</div>
         </div>
+
+        <h1>TUBE-RADIO</h1>
+        
+        <div class="search-box">
+            <input type="text" id="term" placeholder="CERCA TRACCIA...">
+            <button onclick="doSearch()">CERCA</button>
+        </div>
+
         <div id="results"></div>
-        <div class="playlist-title">PROSSIMI BRANI:</div>
+
+        <div style="font-size: 0.8rem; margin-bottom: 5px; border-bottom: 1px solid #ffb000;">PLAYLIST ATTUALE:</div>
         <div id="playlist" class="playlist-area"></div>
     </div>
+
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
-        const resDiv = document.getElementById('results');
-        const playDiv = document.getElementById('playlist');
+
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60);
+            const s = seconds % 60;
+            return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
 
         async function doSearch() {
             const q = document.getElementById('term').value;
             if(!q) return;
-            resDiv.innerHTML = "<div style='color:#0ff'>RICERCA...</div>";
+            const resDiv = document.getElementById('results');
+            resDiv.innerHTML = "RICERCA...";
             const r = await fetch('/search?q=' + encodeURIComponent(q));
             const data = await r.json();
             resDiv.innerHTML = "";
             data.forEach(s => {
                 const div = document.createElement('div');
                 div.className = 'song-card';
-                div.innerText = `${s.title} [${s.duration}]`;
+                div.innerHTML = `<span>${s.title}</span><span style="color:#ffb000; font-size:0.8rem;">${s.duration}</span>`;
                 div.onclick = () => {
-                    socket.emit('add-to-queue', { id: s.id, title: s.title, seconds: s.seconds });
+                    socket.emit('add-to-queue', s);
                     const t = document.getElementById('toast');
-                    t.className = "active";
-                    setTimeout(() => t.className = "", 2000);
+                    t.classList.add('show');
+                    setTimeout(() => t.classList.remove('show'), 2000);
                 };
                 resDiv.appendChild(div);
             });
         }
 
-        socket.on('update-queue', (queue) => {
-            let wait = 0;
-            playDiv.innerHTML = queue.map((s, i) => {
-                const row = `<div class="q-item">
-                    <span>${i+1}. ${s.title.substring(0,18)}</span>
-                    <span style="color:#0ff">${i === 0 ? 'LIVE' : 'T-' + Math.floor(wait/60) + 'm'}</span>
-                </div>`;
-                wait += s.seconds;
-                return row;
-            }).join('');
+        socket.on('update-queue', (data) => {
+            // data ora contiene { list: [], totalWait: seconds }
+            document.getElementById('eta').innerText = formatTime(data.totalWait);
+            
+            document.getElementById('playlist').innerHTML = data.list.map((s,i) => `
+                <div style="display:flex; justify-content:space-between; margin-bottom:3px;">
+                    <span>${i+1}. ${s.title.substring(0,25)}</span>
+                    <span style="color:${i===0?'#fff':'#ffb000'}">${i===0?'LIVE':s.duration}</span>
+                </div>
+            `).join('');
         });
     </script>
 </body>
