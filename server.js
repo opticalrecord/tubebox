@@ -30,9 +30,14 @@ app.get('/search', async (req, res) => {
 io.on('connection', (socket) => {
     sendUpdate();
 
-    // RICEVE IL LIVELLO AUDIO DAL PLAYER E LO SPARA AI TELECOMANDI
+    // Sincronizza i VU-meter
     socket.on('audio-level', (level) => {
         socket.broadcast.emit('vibe-check', level);
+    });
+
+    // Sincronizza il countdown
+    socket.on('time-left', (seconds) => {
+        socket.broadcast.emit('sync-countdown', seconds);
     });
 
     socket.on('add-to-queue', (song) => {
@@ -52,10 +57,9 @@ io.on('connection', (socket) => {
     });
 
     function sendUpdate() {
-        const totalSeconds = queue.reduce((acc, s) => acc + (s.seconds || 0), 0);
-        io.emit('update-queue', { list: queue, totalWait: totalSeconds });
+        io.emit('update-queue', { list: queue });
     }
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, '0.0.0.0', () => console.log(`YOUTUBOX ONLINE - PORTA ${PORT}`));
+server.listen(PORT, '0.0.0.0', () => console.log(`YOUTUBOX LIVE` || 3000));
