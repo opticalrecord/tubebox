@@ -1,92 +1,49 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>YOUTUBOX REMOTE</title>
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-    <style>
-        body { background: #0a0a0a; color: #ffb000; font-family: 'VT323', monospace; margin: 0; display: flex; justify-content: center; }
-        .remote-case { width: 100%; max-width: 400px; height: 100vh; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; }
-        .title-container { display: flex; align-items: center; justify-content: center; margin: 15px 0; font-size: 2.8rem; font-weight: bold; letter-spacing: 1px; }
-        .vu-meter-o { width: 30px; height: 30px; border: 3px solid #ffb000; border-radius: 50%; position: relative; margin: 0 4px; display: inline-flex; align-items: center; justify-content: center; background: #111; top: 4px; transition: box-shadow 0.1s; }
-        .needle { width: 2px; height: 15px; background: #ffb000; transform-origin: bottom center; transform: rotate(-45deg); transition: transform 0.1s ease-out; position: absolute; bottom: 50%; }
-        .status-bar { background: #1a1100; border: 1px solid #ffb000; padding: 10px; margin-bottom: 15px; text-align: center; }
-        #eta { font-size: 1.5rem; color: #fff; }
-        .search-box { display: flex; gap: 5px; margin-bottom: 20px; }
-        input { flex: 1; background: #111; border: 2px solid #ffb000; color: #ffb000; padding: 12px; font-family: 'VT323'; font-size: 1.2rem; outline: none; }
-        button { background: #ffb000; border: none; padding: 10px 15px; font-family: 'VT323'; font-weight: bold; cursor: pointer; color: #000; }
-        #results { flex: 1; overflow-y: auto; margin-bottom: 15px; }
-        .song-card { border: 1px solid #444; padding: 10px; margin-bottom: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-        .playlist-area { height: 120px; overflow-y: auto; opacity: 0.7; font-size: 0.9rem; border-top: 1px solid #333; }
-        #toast { position: fixed; bottom: -60px; left: 50%; transform: translateX(-50%); background: #ffb000; color: #000; padding: 10px 30px; transition: 0.4s; z-index: 1000; font-weight: bold; }
-        #toast.show { bottom: 20px; }
-    </style>
-</head>
-<body>
-    <div id="toast">RECORDING...</div>
-    <div class="remote-case">
-        <div class="status-bar">
-            <div style="font-size: 0.7rem; opacity: 0.8;">WAITING TIME:</div>
-            <div id="eta">00:00</div>
-        </div>
-        <div class="title-container">
-            Y<div class="vu-meter-o"><div id="vu-1" class="needle"></div></div>UTUB<div class="vu-meter-o"><div id="vu-2" class="needle"></div></div>X
-        </div>
-        <div class="search-box">
-            <input type="text" id="term" placeholder="FIND MUSIC...">
-            <button onclick="doSearch()">GO</button>
-        </div>
-        <div id="results"></div>
-        <div id="playlist" class="playlist-area"></div>
-    </div>
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        const socket = io();
+<script>
+    const socket = io();
+    let countdownInterval;
 
-        // RICEVE IL LIVELLO AUDIO DAL PLAYER VIA SERVER
-        socket.on('vibe-check', (level) => {
-            const angle1 = (level - 40) + (Math.random() * 10);
-            const angle2 = (level - 40) + (Math.random() * 10);
-            document.getElementById('vu-1').style.transform = `rotate(${angle1}deg)`;
-            document.getElementById('vu-2').style.transform = `rotate(${angle2}deg)`;
-            
-            // Effetto bagliore sui picchi
-            const glow = level > 60 ? '0 0 10px #ffb000' : 'none';
-            document.querySelectorAll('.vu-meter-o').forEach(el => el.style.boxShadow = glow);
+    function formatTime(seconds) {
+        if (seconds < 0) return "00:00";
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+
+    // RICEZIONE VU-METER
+    socket.on('vibe-check', (level) => {
+        const a1 = (level - 40) + (Math.random() * 10);
+        const a2 = (level - 40) + (Math.random() * 10);
+        document.getElementById('vu-1').style.transform = `rotate(${a1}deg)`;
+        document.getElementById('vu-2').style.transform = `rotate(${a2}deg)`;
+    });
+
+    // RICEZIONE COUNTDOWN REALE DAL PLAYER
+    socket.on('sync-countdown', (seconds) => {
+        document.getElementById('eta').innerText = formatTime(seconds);
+    });
+
+    async function doSearch() {
+        const q = document.getElementById('term').value;
+        if(!q) return;
+        document.getElementById('results').innerHTML = "SEARCHING...";
+        const r = await fetch('/search?q=' + encodeURIComponent(q));
+        const data = await r.json();
+        document.getElementById('results').innerHTML = "";
+        data.forEach(s => {
+            const div = document.createElement('div');
+            div.className = 'song-card';
+            div.innerHTML = `<span>${s.title}</span><span>${s.duration}</span>`;
+            div.onclick = () => { socket.emit('add-to-queue', s); };
+            document.getElementById('results').appendChild(div);
         });
+    }
 
-        async function doSearch() {
-            const q = document.getElementById('term').value;
-            if(!q) return;
-            document.getElementById('results').innerHTML = "SEARCHING...";
-            const r = await fetch('/search?q=' + encodeURIComponent(q));
-            const data = await r.json();
-            document.getElementById('results').innerHTML = "";
-            data.forEach(s => {
-                const div = document.createElement('div');
-                div.className = 'song-card';
-                div.innerHTML = `<span>${s.title}</span><span>${s.duration}</span>`;
-                div.onclick = () => {
-                    socket.emit('add-to-queue', s);
-                    const t = document.getElementById('toast'); t.classList.add('show');
-                    setTimeout(() => t.classList.remove('show'), 2000);
-                };
-                document.getElementById('results').appendChild(div);
-            });
-        }
-
-        socket.on('update-queue', (data) => {
-            const min = Math.floor(data.totalWait / 60);
-            const sec = data.totalWait % 60;
-            document.getElementById('eta').innerText = `${min.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
-            document.getElementById('playlist').innerHTML = (data.list || []).map((s,i) => `
-                <div style="display:flex; justify-content:space-between; margin-bottom:3px;">
-                    <span>${i+1}. ${s.title.substring(0,25)}</span>
-                    <span style="color:${i===0?'#fff':'#ffb000'}">${i===0?'LIVE':s.duration}</span>
-                </div>
-            `).join('');
-        });
-    </script>
-</body>
-</html>
+    socket.on('update-queue', (data) => {
+        document.getElementById('playlist').innerHTML = (data.list || []).map((s,i) => `
+            <div style="display:flex; justify-content:space-between; margin-bottom:3px; opacity:${i===0?1:0.5}">
+                <span>${i+1}. ${s.title.substring(0,25)}</span>
+                <span>${i===0 ? 'NOW' : s.duration}</span>
+            </div>
+        `).join('');
+    });
+</script>
