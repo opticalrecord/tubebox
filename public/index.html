@@ -9,118 +9,94 @@
         body { background: #0a0a0a; color: #ffb000; font-family: 'VT323', monospace; margin: 0; display: flex; justify-content: center; }
         .remote-case { width: 100%; max-width: 400px; height: 100vh; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; }
         
-        /* Header con VU-Meter */
-        .header-container { 
-            display: flex; align-items: center; justify-content: center; gap: 15px; margin: 10px 0; 
+        /* Titolo con VU-Meter integrato */
+        .title-container { 
+            display: flex; align-items: center; justify-content: center; margin: 15px 0; font-size: 3rem; font-weight: bold; 
         }
         
-        h1 { 
-            font-size: 2.8rem; margin: 0; 
-            text-shadow: none; /* Rimosso l'effetto sfocatura */
-            letter-spacing: 2px;
-        }
-
-        /* VU-Meter Circolari Minimali */
-        .vu-meter {
-            width: 30px; height: 30px; border: 2px solid #ffb000; border-radius: 50%;
-            position: relative; display: flex; align-items: center; justify-content: center;
+        .vu-meter-o {
+            width: 32px; height: 32px; border: 3px solid #ffb000; border-radius: 50%;
+            position: relative; margin: 0 2px; display: inline-flex; align-items: center; justify-content: center;
+            background: #111;
         }
         .needle {
-            width: 2px; height: 14px; background: #ffb000;
+            width: 2px; height: 16px; background: #ffb000;
             transform-origin: bottom center;
             transform: rotate(-45deg);
             transition: transform 0.1s ease-out;
             position: absolute; bottom: 50%;
         }
 
-        .status-bar { 
-            background: #1a1100; border: 1px solid #ffb000; padding: 10px; 
-            margin-bottom: 15px; border-radius: 4px; text-align: center;
-        }
-        #eta { font-size: 1.5rem; font-weight: bold; color: #fff; }
+        .status-bar { background: #1a1100; border: 1px solid #ffb000; padding: 10px; margin-bottom: 15px; border-radius: 4px; text-align: center; }
+        #eta { font-size: 1.5rem; color: #fff; }
 
         .search-box { display: flex; gap: 5px; margin-bottom: 20px; }
         input { flex: 1; background: #111; border: 2px solid #ffb000; color: #ffb000; padding: 12px; font-family: 'VT323'; font-size: 1.2rem; outline: none; }
         button { background: #ffb000; border: none; padding: 10px 15px; font-family: 'VT323'; font-weight: bold; cursor: pointer; color: #000; }
         
         #results { flex: 1; overflow-y: auto; border-bottom: 1px dashed #444; margin-bottom: 15px; }
-        .song-card { border: 1px solid #444; padding: 10px; margin-bottom: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-        .song-card:active { background: #ffb000; color: #000; }
+        .song-card { border: 1px solid #444; padding: 10px; margin-bottom: 8px; cursor: pointer; display: flex; justify-content: space-between; }
         
         .playlist-area { height: 120px; overflow-y: auto; opacity: 0.7; font-size: 0.9rem; }
-        #toast { position: fixed; bottom: -60px; left: 50%; transform: translateX(-50%); background: #ffb000; color: #000; padding: 10px 30px; transition: 0.4s; z-index: 1000; font-weight: bold; border: 1px solid #fff; }
+        #toast { position: fixed; bottom: -60px; left: 50%; transform: translateX(-50%); background: #ffb000; color: #000; padding: 10px 30px; transition: 0.4s; z-index: 1000; font-weight: bold; }
         #toast.show { bottom: 20px; }
     </style>
 </head>
 <body>
-    <div id="toast">INVIATO...</div>
+    <div id="toast">CARICAMENTO...</div>
     <div class="remote-case">
         <div class="status-bar">
             <div style="font-size: 0.7rem; opacity: 0.8;">TEMPO TOTALE IN CODA:</div>
             <div id="eta">00:00</div>
         </div>
 
-        <div class="header-container">
-            <div class="vu-meter"><div id="vu-l" class="needle"></div></div>
-            
-            <h1>YOUTUBOX</h1>
-            
-            <div class="vu-meter"><div id="vu-r" class="needle"></div></div>
+        <div class="title-container">
+            Y<div class="vu-meter-o"><div id="vu-needle" class="needle"></div></div>UTUBOX
         </div>
         
         <div class="search-box">
             <input type="text" id="term" placeholder="CERCA TRACCIA...">
             <button onclick="doSearch()">CERCA</button>
         </div>
-
         <div id="results"></div>
-
-        <div style="font-size: 0.8rem; margin-bottom: 5px; border-bottom: 1px solid #ffb000;">PLAYLIST ATTUALE:</div>
+        <div style="font-size: 0.8rem; margin-bottom: 5px; border-bottom: 1px solid #ffb000;">PLAYLIST:</div>
         <div id="playlist" class="playlist-area"></div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
-
-        // Animazione VU-Meter (Simulata)
+        // Lancetta animata nella "O"
         setInterval(() => {
-            const angleL = Math.floor(Math.random() * 90) - 45;
-            const angleR = Math.floor(Math.random() * 90) - 45;
-            document.getElementById('vu-l').style.transform = `rotate(${angleL}deg)`;
-            document.getElementById('vu-r').style.transform = `rotate(${angleR}deg)`;
+            const angle = Math.floor(Math.random() * 80) - 40;
+            document.getElementById('vu-needle').style.transform = `rotate(${angle}deg)`;
         }, 150);
-
-        function formatTime(seconds) {
-            const m = Math.floor(seconds / 60);
-            const s = seconds % 60;
-            return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-        }
 
         async function doSearch() {
             const q = document.getElementById('term').value;
             if(!q) return;
-            const resDiv = document.getElementById('results');
-            resDiv.innerHTML = "RICERCA...";
+            document.getElementById('results').innerHTML = "SEARCH...";
             const r = await fetch('/search?q=' + encodeURIComponent(q));
             const data = await r.json();
-            resDiv.innerHTML = "";
+            document.getElementById('results').innerHTML = "";
             data.forEach(s => {
                 const div = document.createElement('div');
                 div.className = 'song-card';
-                div.innerHTML = `<span>${s.title}</span><span style="color:#ffb000; font-size:0.8rem;">${s.duration}</span>`;
+                div.innerHTML = `<span>${s.title}</span><span>${s.duration}</span>`;
                 div.onclick = () => {
                     socket.emit('add-to-queue', s);
                     const t = document.getElementById('toast');
                     t.classList.add('show');
                     setTimeout(() => t.classList.remove('show'), 2000);
                 };
-                resDiv.appendChild(div);
+                document.getElementById('results').appendChild(div);
             });
         }
 
         socket.on('update-queue', (data) => {
-            document.getElementById('eta').innerText = formatTime(data.totalWait || 0);
+            const min = Math.floor(data.totalWait / 60);
+            const sec = data.totalWait % 60;
+            document.getElementById('eta').innerText = `${min.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
             document.getElementById('playlist').innerHTML = (data.list || []).map((s,i) => `
                 <div style="display:flex; justify-content:space-between; margin-bottom:3px;">
                     <span>${i+1}. ${s.title.substring(0,25)}</span>
