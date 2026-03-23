@@ -193,12 +193,22 @@
             banner.classList.remove('searching');
         }
 
-        function load(id, title, deck) {
-            const p = (deck === 'A' ? playerA : playerB);
-            p.loadVideoById(id);
-            document.getElementById('title-' + deck).innerText = title;
-            document.getElementById('platter-' + deck).style.backgroundImage = `url('https://img.youtube.com/vi/${id}/hqdefault.jpg')`;
-        }
+      function load(id, title, deck) {
+    const p = (deck === 'A' ? playerA : playerB);
+    
+    // Usa cueVideoById invece di loadVideoById per evitare l'auto-play
+    p.cueVideoById(id);
+    
+    document.getElementById('title-' + deck).innerText = title;
+    
+    // Aggiorna la thumbnail sul disco
+    const platter = document.getElementById('platter-' + deck);
+    platter.style.backgroundImage = `url('https://img.youtube.com/vi/${id}/hqdefault.jpg')`;
+    
+    // Reset dello stato grafico (fermo)
+    platter.classList.remove('playing');
+    document.getElementById('btn-play-' + deck).classList.remove('active');
+}
 
         function toggleDeck(deck) {
             const p = (deck === 'A' ? playerA : playerB);
