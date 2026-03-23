@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOUTUBOX DJ - ICON NAVIGATION</title>
+    <title>YOUTUBOX DJ - NAV CENTERED</title>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
         :root { --amber: #ffb000; --bg: #050505; --panel: #111; --silver: #999; --led-off: #111; }
@@ -22,21 +22,23 @@
         #search-results { width: 100%; max-width: 1200px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
         .result-card { background: #0d0d0d; border: 1px solid #222; padding: 12px; height: 90px; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
         
-        /* NAV PANEL MINIMALE CON CARATTERI GIGANTI */
-        .nav-panel { display: flex; align-items: center; justify-content: center; border: 1px solid #333; gap: 20px; }
+        /* NAV PANEL CENTRATO */
+        .nav-panel { display: flex; align-items: center; justify-content: center; border: 1px solid var(--amber); gap: 10px; }
         .nav-btn { 
             background: transparent; border: none; color: var(--amber); 
-            font-family: 'VT323'; font-size: 5rem; /* Caratteri molto grandi */
-            line-height: 1; cursor: pointer; transition: 0.2s; padding: 0 20px;
+            font-family: 'VT323'; font-size: 4rem; 
+            line-height: 1; cursor: pointer; transition: 0.2s; 
+            padding: 0 10px;
         }
-        .nav-btn:hover:not(:disabled) { color: #fff; text-shadow: 0 0 15px var(--amber); }
+        .nav-btn:hover:not(:disabled) { color: #fff; text-shadow: 0 0 10px var(--amber); }
         .nav-btn:disabled { opacity: 0.1; cursor: not-allowed; }
+        .page-indicator { font-size: 2.5rem; color: #fff; min-width: 40px; text-align: center; }
 
         .load-btns { display: flex; gap: 5px; }
         .load-btns button { flex: 1; background: #222; color: var(--amber); border: 1px solid #333; font-family: 'VT323'; cursor: pointer; padding: 4px; }
         .load-btns button:hover { background: var(--amber); color: #000; }
 
-        /* CONSOLE & MIXER */
+        /* DJ SETUP */
         .dj-setup { display: grid; grid-template-columns: 1fr 360px 1fr; gap: 20px; background: #080808; padding: 40px; border: 3px solid #1a1a1a; width: 100%; max-width: 1200px; }
         .deck { background: var(--panel); padding: 30px; border: 1px solid #222; display: flex; flex-direction: column; align-items: center; position: relative; }
         .platter { width: 210px; height: 210px; border-radius: 50%; border: 10px solid #000; background-size: cover; background-position: center; animation: spin 3.33s linear infinite; animation-play-state: paused; mask-image: radial-gradient(circle, transparent 8%, black 9%); -webkit-mask-image: radial-gradient(circle, transparent 8%, black 9%); }
@@ -82,10 +84,7 @@
         </div>
 
         <div class="mixer">
-            <div class="logo-box">
-                <div style="letter-spacing:10px; font-size:1rem; color:#fff; text-align:center;">YOUTUBOX</div>
-                <div class="logo-sub">DJ</div>
-            </div>
+            <div class="logo-box"><div style="letter-spacing:10px; font-size:1rem; color:#fff; text-align:center;">YOUTUBOX</div><div class="logo-sub">DJ</div></div>
             <div class="vu-container"><div class="vu-row" id="vu-L"></div><div class="vu-row" id="vu-R"></div></div>
             <div class="volume-section">
                 <div class="slider-track-v"><input type="range" id="faderA" class="custom-slider-v" style="width:180px;" min="0" max="100" value="100" oninput="updateMixer()"></div>
@@ -152,13 +151,14 @@
                 }
             }
 
-            // NAV PANEL CON SOLO < E > GIGANTI
+            // NAV PANEL CENTRATO CON INDICATORE < X >
             const canPrev = currentPage > 0;
             const canNext = start + 5 < searchResults.length;
 
             html += `
             <div class="result-card nav-panel">
                 <button class="nav-btn" onclick="changePage(-1)" ${!canPrev ? 'disabled' : ''}>&lt;</button>
+                <div class="page-indicator">${currentPage + 1}</div>
                 <button class="nav-btn" onclick="changePage(1)" ${!canNext ? 'disabled' : ''}>&gt;</button>
             </div>`;
 
@@ -167,7 +167,7 @@
 
         function changePage(dir) { currentPage += dir; renderPage(); }
 
-        /* LOGICA AUDIO (VU METER, MIXER, ECC) */
+        /* LOGICA AUDIO E VU METER */
         function load(id, title, deck) {
             const p = (deck === 'A' ? playerA : playerB);
             p.cueVideoById(id);
