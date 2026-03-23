@@ -3,46 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOUTUBOX DJ - INDUSTRIAL 6-SLOT</title>
+    <title>YOUTUBOX DJ - FLAT EDITION</title>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
-        :root { --amber: #ffb000; --bg: #050505; --panel: #1a1a1a; --silver: #ccc; }
+        :root { --amber: #ffb000; --bg: #050505; --panel: #111; --silver: #999; }
         body { background: var(--bg); color: var(--amber); font-family: 'VT323', monospace; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
         
         /* SEARCH BAR BREATHING */
         @keyframes breathingBar {
-            0%, 100% { border-color: #333; box-shadow: 0 0 5px rgba(255,255,255,0.1); }
-            50% { border-color: #eee; box-shadow: 0 0 15px rgba(255,255,255,0.2); }
+            0%, 100% { border-color: #222; }
+            50% { border-color: #eee; }
         }
         .search-container { 
-            width: 100%; max-width: 1200px; background: #111; padding: 12px; border-radius: 8px; 
-            border: 2px solid #333; display: flex; gap: 10px; animation: breathingBar 3s infinite ease-in-out; margin-bottom: 15px;
+            width: 100%; max-width: 1200px; background: #0a0a0a; padding: 12px; border-radius: 4px; 
+            border: 1px solid #222; display: flex; gap: 10px; animation: breathingBar 3s infinite ease-in-out; margin-bottom: 10px;
         }
         input[type=text] { flex: 1; background: transparent; border: none; color: #fff; padding: 8px; font-family: 'VT323'; font-size: 1.4rem; outline: none; }
-        input[type=text]::placeholder { color: #444; }
+        input[type=text]::placeholder { animation: breathingText 3s infinite; }
+        @keyframes breathingText { 0%, 100% { color: #333; } 50% { color: #fff; } }
 
-        /* RISULTATI LIMITATI A 6 */
-        #search-results { 
-            width: 100%; max-width: 1200px; 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr); /* 3 colonne per 2 righe = 6 slot */
-            gap: 10px; margin-bottom: 20px; 
-        }
-        .result-card { background: #111; border: 1px solid #333; padding: 10px; border-radius: 4px; text-align: center; }
+        #search-results { width: 100%; max-width: 1200px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .result-card { background: #0a0a0a; border: 1px solid #222; padding: 10px; border-radius: 2px; text-align: center; }
 
         /* DJ CONSOLE */
-        .dj-setup { display: grid; grid-template-columns: 1fr 350px 1fr; gap: 20px; background: #151515; padding: 30px; border-radius: 15px; border: 5px solid #333; width: 100%; max-width: 1200px; box-shadow: inset 0 0 100px #000; }
+        .dj-setup { display: grid; grid-template-columns: 1fr 350px 1fr; gap: 20px; background: #0d0d0d; padding: 30px; border: 2px solid #222; width: 100%; max-width: 1200px; }
         
-        .deck { background: var(--panel); padding: 25px; border-radius: 10px; border: 2px solid #222; text-align: center; position: relative; display: flex; flex-direction: column; align-items: center; }
+        .deck { background: var(--panel); padding: 25px; border: 1px solid #222; text-align: center; position: relative; display: flex; flex-direction: column; align-items: center; }
         
-        /* UNIFIED SLIDER STYLE */
-        .slider-track-v { position: relative; width: 45px; background: #000; border-radius: 4px; border: 2px solid #333; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .custom-slider-v { appearance: none; -webkit-appearance: none; background: transparent; transform: rotate(90deg); cursor: pointer; outline: none; position: absolute; width: 200px; }
-        .custom-slider-v::-webkit-slider-thumb { -webkit-appearance: none; width: 25px; height: 45px; background: var(--silver); border: 2px solid #555; border-radius: 3px; box-shadow: 0 0 10px #000; border-top: 4px solid #fff; border-bottom: 4px solid #777; }
+        /* FLAT SLIDER STYLE (TUTTI UGUALI) */
+        .slider-track-v { position: relative; width: 40px; background: #000; border: 1px solid #222; display: flex; align-items: center; justify-content: center; }
+        .custom-slider-v { appearance: none; -webkit-appearance: none; background: transparent; transform: rotate(90deg); cursor: pointer; outline: none; position: absolute; width: 220px; z-index: 2; }
+        
+        /* Pomello Piatto senza 3D */
+        .custom-slider-v::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 40px; background: var(--silver); border: none; border-radius: 0; cursor: ns-resize; }
+        .custom-slider-v::-moz-range-thumb { width: 28px; height: 40px; background: var(--silver); border: none; border-radius: 0; cursor: ns-resize; }
 
         .platter { 
-            width: 220px; height: 220px; border-radius: 50%; border: 14px solid #111; 
-            background-color: #080808; background-size: cover; background-position: center;
+            width: 220px; height: 220px; border-radius: 50%; border: 10px solid #050505; 
+            background-color: #000; background-size: cover; background-position: center;
             animation: spin 3.3s linear infinite; animation-play-state: paused;
             mask-image: radial-gradient(circle, transparent 10%, black 11%);
             -webkit-mask-image: radial-gradient(circle, transparent 10%, black 11%);
@@ -50,19 +48,24 @@
         .platter.playing { animation-play-state: running; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* MIXER CENTER */
+        /* MIXER CENTER - LOGO CENTRATO */
         .mixer { display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
-        .logo-main { font-size: 1.1rem; color: #fff; letter-spacing: 6px; margin: 0; }
-        .logo-sub { font-size: 4.5rem; color: var(--amber); font-weight: bold; line-height: 0.75; margin: 0; text-shadow: 0 0 25px rgba(255,176,0,0.4); }
+        .logo-box { text-align: center; width: 100%; }
+        .logo-main { font-size: 1.5rem; color: #fff; letter-spacing: 8px; margin: 0; width: 100%; text-align: center; }
+        .logo-sub { font-size: 5rem; color: var(--amber); font-weight: bold; line-height: 0.8; margin: 0; width: 100%; text-align: center; }
 
-        .vu-container { width: 95%; background: #000; padding: 12px; border: 2px solid #333; border-radius: 5px; margin-bottom: 20px; }
-        .vu-row { display: flex; gap: 2px; height: 12px; margin: 5px 0; }
-        .led { flex: 1; background: #1a1a1a; transition: 0.05s; }
+        /* VU METER */
+        .vu-container { width: 90%; background: #000; padding: 10px; border: 1px solid #222; margin: 15px 0; }
+        .vu-row { display: flex; gap: 2px; height: 8px; margin: 4px 0; }
+        .led { flex: 1; background: #111; transition: 0.05s; }
 
-        .volume-section { display: flex; gap: 50px; margin-top: 10px; }
+        .volume-section { display: flex; gap: 60px; margin-top: 10px; }
 
-        .btn-play { width: 180px; padding: 18px; background: #222; color: #555; border: 2px solid #333; cursor: pointer; font-family: 'VT323'; font-size: 1.6rem; margin-top: 25px; letter-spacing: 2px; }
-        .btn-play.active { background: #1a331a; color: #0f0; border-color: #0f0; box-shadow: 0 0 20px rgba(0,255,0,0.3); }
+        .btn-play { width: 160px; padding: 15px; background: #111; color: #444; border: 1px solid #222; cursor: pointer; font-family: 'VT323'; font-size: 1.4rem; margin-top: 25px; transition: 0.1s; }
+        .btn-play.active { background: #000; color: #0f0; border-color: #0f0; }
+
+        #xfader { width: 100%; appearance: none; height: 4px; background: #222; outline: none; margin-top: 20px; }
+        #xfader::-webkit-slider-thumb { appearance: none; width: 40px; height: 28px; background: var(--silver); border: none; }
 
         .yt-hidden { position: absolute; top: -9999px; visibility: hidden; }
         #overlay { position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; justify-content: center; align-items: center; cursor: pointer; }
@@ -70,10 +73,10 @@
 </head>
 <body>
 
-    <div id="overlay" onclick="unlock()"><h1>[ POWER ON ]</h1></div>
+    <div id="overlay" onclick="unlock()"><h1>[ CLICCA PER ATTIVARE ]</h1></div>
 
     <div class="search-container">
-        <input type="text" id="query" placeholder="CERCA TRACCIA...">
+        <input type="text" id="query" placeholder="CERCA TRACCIA">
         <button onclick="search()" style="background:var(--amber); border:none; padding:0 30px; font-family:'VT323'; cursor:pointer; font-weight:bold;">CERCA</button>
     </div>
 
@@ -81,21 +84,21 @@
 
     <div class="dj-setup">
         <div class="deck">
-            <div id="title-A" style="font-size:0.9rem; margin-bottom:15px; height:20px; color:#0f0; background:#000; width:100%;">DECK A: READY</div>
+            <div id="title-A" style="font-size:0.9rem; margin-bottom:15px; height:20px; color:#0f0; background:#000; width:100%; overflow:hidden;">DECK A</div>
             <div id="platter-A" class="platter"></div>
             <div style="position: absolute; right: 15px; top: 75px;">
                 <div class="slider-track-v" style="height: 240px;">
-                    <input type="range" class="custom-slider-v" style="width: 220px;" min="0.92" max="1.08" step="0.001" value="1" oninput="updatePitch('A', this.value)">
+                    <input type="range" class="custom-slider-v" min="0.5" max="2.0" step="0.01" value="1.0" oninput="updatePitch('A', this.value)">
                 </div>
-                <div id="val-A" style="font-size:0.8rem; color:#fff; text-align:center; margin-top:8px;">0.0%</div>
+                <div id="val-A" style="font-size:0.8rem; color:#fff; text-align:center; margin-top:5px;">1.0x</div>
             </div>
-            <button id="btn-play-A" class="btn-play" onclick="toggleDeck('A')">START · STOP</button>
+            <button id="btn-play-A" class="btn-play" onclick="toggleDeck('A')">START / STOP</button>
         </div>
 
         <div class="mixer">
-            <div class="mixer-header">
-                <p class="logo-main">YOUTUBOX</p>
-                <h1 class="logo-sub">DJ</h1>
+            <div class="logo-box">
+                <div class="logo-main">YOUTUBOX</div>
+                <div class="logo-sub">DJ</div>
             </div>
 
             <div class="vu-container">
@@ -104,27 +107,27 @@
             </div>
 
             <div class="volume-section">
-                <div class="slider-track-v" style="height:210px;">
-                    <input type="range" id="faderA" class="custom-slider-v" style="width:190px;" min="0" max="100" value="100" oninput="updateMixer()">
+                <div class="slider-track-v" style="height:200px;">
+                    <input type="range" id="faderA" class="custom-slider-v" style="width:180px;" min="0" max="100" value="100" oninput="updateMixer()">
                 </div>
-                <div class="slider-track-v" style="height:210px;">
-                    <input type="range" id="faderB" class="custom-slider-v" style="width:190px;" min="0" max="100" value="100" oninput="updateMixer()">
+                <div class="slider-track-v" style="height:200px;">
+                    <input type="range" id="faderB" class="custom-slider-v" style="width:180px;" min="0" max="100" value="100" oninput="updateMixer()">
                 </div>
             </div>
 
-            <input type="range" id="xfader" min="0" max="100" value="50" oninput="updateMixer()" style="width:100%; margin-top:20px;">
+            <input type="range" id="xfader" min="0" max="100" value="50" oninput="updateMixer()">
         </div>
 
         <div class="deck">
-            <div id="title-B" style="font-size:0.9rem; margin-bottom:15px; height:20px; color:#0f0; background:#000; width:100%;">DECK B: READY</div>
+            <div id="title-B" style="font-size:0.9rem; margin-bottom:15px; height:20px; color:#0f0; background:#000; width:100%; overflow:hidden;">DECK B</div>
             <div id="platter-B" class="platter"></div>
             <div style="position: absolute; right: 15px; top: 75px;">
                 <div class="slider-track-v" style="height: 240px;">
-                    <input type="range" class="custom-slider-v" style="width: 220px;" min="0.92" max="1.08" step="0.001" value="1" oninput="updatePitch('B', this.value)">
+                    <input type="range" class="custom-slider-v" min="0.5" max="2.0" step="0.01" value="1.0" oninput="updatePitch('B', this.value)">
                 </div>
-                <div id="val-B" style="font-size:0.8rem; color:#fff; text-align:center; margin-top:8px;">0.0%</div>
+                <div id="val-B" style="font-size:0.8rem; color:#fff; text-align:center; margin-top:5px;">1.0x</div>
             </div>
-            <button id="btn-play-B" class="btn-play" onclick="toggleDeck('B')">START · STOP</button>
+            <button id="btn-play-B" class="btn-play" onclick="toggleDeck('B')">START / STOP</button>
         </div>
     </div>
 
@@ -138,14 +141,21 @@
         let playerA, playerB;
 
         function onYouTubeIframeAPIReady() {
-            playerA = new YT.Player('playerA', { events: { 'onStateChange': (e) => syncUI('A', e.data) } });
-            playerB = new YT.Player('playerB', { events: { 'onStateChange': (e) => syncUI('B', e.data) } });
+            playerA = new YT.Player('playerA', { 
+                playerVars: { 'autoplay': 0, 'controls': 0, 'suggestedQuality': 'small' },
+                events: { 'onStateChange': (e) => syncUI('A', e.data), 'onReady': () => playerA.setPlaybackRate(1) } 
+            });
+            playerB = new YT.Player('playerB', { 
+                playerVars: { 'autoplay': 0, 'controls': 0, 'suggestedQuality': 'small' },
+                events: { 'onStateChange': (e) => syncUI('B', e.data), 'onReady': () => playerB.setPlaybackRate(1) } 
+            });
         }
 
         function syncUI(deck, state) {
             const platter = document.getElementById('platter-' + deck);
             const btn = document.getElementById('btn-play-' + deck);
-            state === 1 ? (platter.classList.add('playing'), btn.classList.add('active')) : (platter.classList.remove('playing'), btn.classList.remove('active'));
+            if(state === 1) { platter.classList.add('playing'); btn.classList.add('active'); }
+            else { platter.classList.remove('playing'); btn.classList.remove('active'); }
         }
 
         async function search() {
@@ -153,13 +163,12 @@
             if(!q) return;
             const res = await fetch('/search?q=' + encodeURIComponent(q));
             const data = await res.json();
-            // FORZATI 6 RISULTATI
             document.getElementById('search-results').innerHTML = data.slice(0, 6).map(s => `
                 <div class="result-card">
-                    <div style="height:18px; overflow:hidden; font-weight:bold; color:#fff;">${s.title}</div>
+                    <div style="height:18px; overflow:hidden; font-weight:bold; color:#fff; font-size:0.8rem;">${s.title}</div>
                     <div style="display:flex; gap:5px; margin-top:10px;">
-                        <button onclick="load('${s.id}', '${s.title.replace(/'/g,"")}', 'A')" style="flex:1; background:var(--amber); border:none; cursor:pointer; font-family:'VT323';">LOAD A</button>
-                        <button onclick="load('${s.id}', '${s.title.replace(/'/g,"")}', 'B')" style="flex:1; background:var(--amber); border:none; cursor:pointer; font-family:'VT323';">LOAD B</button>
+                        <button onclick="load('${s.id}', '${s.title.replace(/'/g,"")}', 'A')" style="flex:1; background:var(--amber); border:none; cursor:pointer; font-family:'VT323';">DECK A</button>
+                        <button onclick="load('${s.id}', '${s.title.replace(/'/g,"")}', 'B')" style="flex:1; background:var(--amber); border:none; cursor:pointer; font-family:'VT323';">DECK B</button>
                     </div>
                 </div>
             `).join('');
@@ -177,19 +186,28 @@
             p.getPlayerState() === 1 ? p.pauseVideo() : p.playVideo();
         }
 
+        // CORREZIONE PITCH: YouTube accetta solo certi valori (0.5, 1, 1.5, 2) ma cerchiamo di forzare
         function updatePitch(deck, val) {
             const p = (deck === 'A' ? playerA : playerB);
-            const perc = ((val - 1) * 100).toFixed(1);
-            document.getElementById('val-' + deck).innerText = (perc >= 0 ? '+' : '') + perc + '%';
-            if(p.setPlaybackRate) p.setPlaybackRate(parseFloat(val));
+            const speed = parseFloat(val);
+            document.getElementById('val-' + deck).innerText = speed.toFixed(2) + 'x';
+            
+            // Applica la velocità al player
+            if(p && p.setPlaybackRate) {
+                p.setPlaybackRate(speed);
+            }
+            
+            // Sincronizza visivamente la rotazione del disco
+            const platter = document.getElementById('platter-' + deck);
+            platter.style.animationDuration = (3.3 / speed) + 's';
         }
 
         function updateMixer() {
             const x = document.getElementById('xfader').value;
             const fA = document.getElementById('faderA').value;
             const fB = document.getElementById('faderB').value;
-            playerA.setVolume(Math.min(100, (100 - x) * 2) * (fA / 100));
-            playerB.setVolume(Math.min(100, x * 2) * (fB / 100));
+            if(playerA.setVolume) playerA.setVolume(Math.min(100, (100 - x) * 2) * (fA / 100));
+            if(playerB.setVolume) playerB.setVolume(Math.min(100, x * 2) * (fB / 100));
         }
 
         function initVU() {
@@ -207,13 +225,12 @@
         function updateVU() {
             const vA = (playerA && playerA.getPlayerState() === 1) ? document.getElementById('faderA').value/100 : 0;
             const vB = (playerB && playerB.getPlayerState() === 1) ? document.getElementById('faderB').value/100 : 0;
-            const master = Math.max(vA, vB) * (Math.random() * 0.4 + 0.65);
+            const master = Math.max(vA, vB) * (Math.random() * 0.4 + 0.6);
             ['vu-L', 'vu-R'].forEach(id => {
                 const leds = document.getElementById(id).querySelectorAll('.led');
                 leds.forEach((l, i) => {
                     const active = i < master * 30;
-                    l.style.background = active ? (i < 18 ? '#0f0' : (i < 25 ? '#ff0' : '#f00')) : '#1a1a1a';
-                    l.style.boxShadow = active ? `0 0 8px ${i < 18 ? '#0f0' : (i < 25 ? '#ff0' : '#f00')}` : 'none';
+                    l.style.background = active ? (i < 18 ? '#0f0' : (i < 25 ? '#ff0' : '#f00')) : '#111';
                 });
             });
             requestAnimationFrame(updateVU);
