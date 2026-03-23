@@ -3,44 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOUTUBOX DJ - ANIMATED SEARCH</title>
+    <title>YOUTUBOX DJ - PRO FINAL</title>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
         :root { --amber: #ffb000; --bg: #050505; --panel: #111; --silver: #999; }
         body { background: var(--bg); color: var(--amber); font-family: 'VT323', monospace; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
         
-        /* SEARCH CONTAINER */
         .search-container { 
             width: 100%; max-width: 1200px; background: #0a0a0a; padding: 12px; border-radius: 4px; 
             border: 1px solid #222; display: flex; gap: 10px; margin-bottom: 10px;
         }
         input[type=text] { flex: 1; background: transparent; border: none; color: #fff; padding: 8px; font-family: 'VT323'; font-size: 1.4rem; outline: none; }
 
-        /* TASTO CERCA CON ANIMAZIONE CARICAMENTO */
         .btn-search {
             background: var(--amber); border: none; padding: 0 30px; font-family: 'VT323'; 
             cursor: pointer; font-weight: bold; font-size: 1.2rem; position: relative; overflow: hidden;
-            transition: transform 0.1s;
         }
-        .btn-search:active { transform: scale(0.95); }
-
-        /* Effetto caricamento da sinistra a destra */
         .btn-search::after {
             content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.4); transition: none;
+            background: rgba(255, 255, 255, 0.4);
         }
-        .btn-search.loading::after {
-            left: 100%; transition: left 0.6s ease-in-out;
-        }
+        .btn-search.loading::after { left: 100%; transition: left 0.6s ease-in-out; }
 
-        #search-results { width: 100%; max-width: 1200px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        /* GRIGLIA FISSA A 6 RISULTATI (3 col x 2 righe) */
+        #search-results { 
+            width: 100%; max-width: 1200px; 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            grid-template-rows: repeat(2, auto);
+            gap: 10px; margin-bottom: 20px; 
+        }
         .result-card { background: #0a0a0a; border: 1px solid #222; padding: 10px; border-radius: 2px; text-align: center; }
 
         /* DJ CONSOLE */
         .dj-setup { display: grid; grid-template-columns: 1fr 350px 1fr; gap: 20px; background: #0d0d0d; padding: 30px; border: 2px solid #222; width: 100%; max-width: 1200px; }
         .deck { background: var(--panel); padding: 25px; border: 1px solid #222; text-align: center; position: relative; display: flex; flex-direction: column; align-items: center; }
         
-        /* FLAT SLIDERS */
+        /* FLAT SLIDERS UNIFICATI */
         .slider-track-v { position: relative; width: 40px; background: #000; border: 1px solid #222; display: flex; align-items: center; justify-content: center; }
         .custom-slider-v { appearance: none; -webkit-appearance: none; background: transparent; transform: rotate(90deg); cursor: pointer; outline: none; position: absolute; width: 220px; z-index: 2; }
         .custom-slider-v::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 40px; background: var(--silver); border: none; border-radius: 0; cursor: ns-resize; }
@@ -55,17 +54,17 @@
         .platter.playing { animation-play-state: running; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* MIXER CENTER - LOGO E VU METER */
+        /* MIXER CENTER */
         .mixer { display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
-        .logo-box { text-align: center; width: 100%; }
-        .logo-main { font-size: 1.5rem; color: #fff; letter-spacing: 8px; margin: 0; width: 100%; }
-        .logo-sub { font-size: 5rem; color: var(--amber); font-weight: bold; line-height: 0.8; margin: 0; width: 100%; }
+        .logo-box { text-align: center; width: 100%; margin-bottom: 10px; }
+        .logo-main { font-size: 1.5rem; color: #fff; letter-spacing: 8px; margin: 0; }
+        .logo-sub { font-size: 5rem; color: var(--amber); font-weight: bold; line-height: 0.8; margin: 0; }
 
-        .vu-container { width: 90%; background: #000; padding: 10px; border: 1px solid #222; margin: 15px 0; }
+        .vu-container { width: 90%; background: #000; padding: 10px; border: 1px solid #222; margin-bottom: 15px; }
         .vu-row { display: flex; gap: 2px; height: 8px; margin: 4px 0; }
-        .led { flex: 1; background: #111; }
+        .led { flex: 1; background: #111; transition: 0.05s; }
 
-        .volume-section { display: flex; gap: 60px; margin-top: 10px; }
+        .volume-section { display: flex; gap: 60px; }
 
         .btn-play { width: 160px; padding: 15px; background: #111; color: #444; border: 1px solid #222; cursor: pointer; font-family: 'VT323'; font-size: 1.4rem; margin-top: 25px; }
         .btn-play.active { background: #000; color: #0f0; border-color: #0f0; }
@@ -114,10 +113,10 @@
 
             <div class="volume-section">
                 <div class="slider-track-v" style="height:200px;">
-                    <input type="range" id="faderA" class="custom-slider-v" style="width:180px;" min="0" max="100" value="100" oninput="updateMixer()">
+                    <input type="range" id="faderA" class="custom-slider-v" style="width:180px;" min="0" max="100" value="0" oninput="updateMixer()">
                 </div>
                 <div class="slider-track-v" style="height:200px;">
-                    <input type="range" id="faderB" class="custom-slider-v" style="width:180px;" min="0" max="100" value="100" oninput="updateMixer()">
+                    <input type="range" id="faderB" class="custom-slider-v" style="width:180px;" min="0" max="100" value="0" oninput="updateMixer()">
                 </div>
             </div>
 
@@ -163,12 +162,12 @@
             const q = document.getElementById('query').value;
             if(!q) return;
 
-            // Attiva animazione caricamento
             btn.classList.add('loading');
             
             try {
                 const res = await fetch('/search?q=' + encodeURIComponent(q));
                 const data = await res.json();
+                // Limite forzato a 6
                 document.getElementById('search-results').innerHTML = data.slice(0, 6).map(s => `
                     <div class="result-card">
                         <div style="height:18px; overflow:hidden; font-weight:bold; color:#fff; font-size:0.8rem;">${s.title}</div>
@@ -179,7 +178,6 @@
                     </div>
                 `).join('');
             } finally {
-                // Rimuovi animazione dopo un breve delay per farla vedere
                 setTimeout(() => btn.classList.remove('loading'), 600);
             }
         }
@@ -207,8 +205,10 @@
 
         function updateMixer() {
             const x = document.getElementById('xfader').value;
-            const fA = document.getElementById('faderA').value;
-            const fB = document.getElementById('faderB').value;
+            // Inversione logica: 100 - valore rende il SU (0 html) il valore MASSIMO (100 logico)
+            const fA = 100 - document.getElementById('faderA').value;
+            const fB = 100 - document.getElementById('faderB').value;
+            
             if(playerA.setVolume) playerA.setVolume(Math.min(100, (100 - x) * 2) * (fA / 100));
             if(playerB.setVolume) playerB.setVolume(Math.min(100, x * 2) * (fB / 100));
         }
@@ -226,8 +226,8 @@
         }
 
         function updateVU() {
-            const vA = (playerA && playerA.getPlayerState() === 1) ? document.getElementById('faderA').value/100 : 0;
-            const vB = (playerB && playerB.getPlayerState() === 1) ? document.getElementById('faderB').value/100 : 0;
+            const vA = (playerA && playerA.getPlayerState() === 1) ? (100 - document.getElementById('faderA').value)/100 : 0;
+            const vB = (playerB && playerB.getPlayerState() === 1) ? (100 - document.getElementById('faderB').value)/100 : 0;
             const master = Math.max(vA, vB) * (Math.random() * 0.4 + 0.6);
             ['vu-L', 'vu-R'].forEach(id => {
                 const leds = document.getElementById(id).querySelectorAll('.led');
