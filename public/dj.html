@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOUTUBOX DJ - SCROLL EDITION</title>
+    <title>YOUTUBOX DJ - ICON NAVIGATION</title>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
         :root { --amber: #ffb000; --bg: #050505; --panel: #111; --silver: #999; --led-off: #111; }
@@ -18,21 +18,25 @@
         input[type=text] { flex: 1; background: transparent; border: none; color: #fff; font-family: 'VT323'; font-size: 1.5rem; outline: none; }
         .btn-search { background: var(--amber); border: none; padding: 0 40px; font-family: 'VT323'; font-weight: bold; font-size: 1.3rem; cursor: pointer; }
 
-        /* GRIGLIA 3x2 CON NAVIGATORE */
+        /* RISULTATI */
         #search-results { width: 100%; max-width: 1200px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
-        .result-card { background: #0d0d0d; border: 1px solid #222; padding: 12px; height: 90px; display: flex; flex-direction: column; justify-content: space-between; }
+        .result-card { background: #0d0d0d; border: 1px solid #222; padding: 12px; height: 90px; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
         
-        /* IL NAVIGATORE (6° SLOT) */
-        .nav-panel { border: 2px solid var(--amber); background: #111; display: flex; align-items: center; justify-content: space-around; cursor: default; }
-        .nav-btn { background: transparent; border: 1px solid var(--amber); color: var(--amber); font-family: 'VT323'; font-size: 2rem; width: 45%; height: 80%; cursor: pointer; transition: 0.2s; }
-        .nav-btn:hover:not(:disabled) { background: var(--amber); color: #000; }
-        .nav-btn:disabled { opacity: 0.2; cursor: not-allowed; border-color: #333; }
+        /* NAV PANEL MINIMALE CON CARATTERI GIGANTI */
+        .nav-panel { display: flex; align-items: center; justify-content: center; border: 1px solid #333; gap: 20px; }
+        .nav-btn { 
+            background: transparent; border: none; color: var(--amber); 
+            font-family: 'VT323'; font-size: 5rem; /* Caratteri molto grandi */
+            line-height: 1; cursor: pointer; transition: 0.2s; padding: 0 20px;
+        }
+        .nav-btn:hover:not(:disabled) { color: #fff; text-shadow: 0 0 15px var(--amber); }
+        .nav-btn:disabled { opacity: 0.1; cursor: not-allowed; }
 
         .load-btns { display: flex; gap: 5px; }
         .load-btns button { flex: 1; background: #222; color: var(--amber); border: 1px solid #333; font-family: 'VT323'; cursor: pointer; padding: 4px; }
         .load-btns button:hover { background: var(--amber); color: #000; }
 
-        /* CONSOLE & MIXER (Invariati) */
+        /* CONSOLE & MIXER */
         .dj-setup { display: grid; grid-template-columns: 1fr 360px 1fr; gap: 20px; background: #080808; padding: 40px; border: 3px solid #1a1a1a; width: 100%; max-width: 1200px; }
         .deck { background: var(--panel); padding: 30px; border: 1px solid #222; display: flex; flex-direction: column; align-items: center; position: relative; }
         .platter { width: 210px; height: 210px; border-radius: 50%; border: 10px solid #000; background-size: cover; background-position: center; animation: spin 3.33s linear infinite; animation-play-state: paused; mask-image: radial-gradient(circle, transparent 8%, black 9%); -webkit-mask-image: radial-gradient(circle, transparent 8%, black 9%); }
@@ -64,8 +68,7 @@
         <button id="search-btn" class="btn-search" onclick="search()">CERCA</button>
     </div>
 
-    <div id="search-results">
-        </div>
+    <div id="search-results"></div>
 
     <div class="dj-setup">
         <div class="deck">
@@ -107,8 +110,8 @@
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
         let playerA, playerB, pitchA = 1, pitchB = 1;
-        let searchResults = []; // Database locale dei risultati correnti
-        let currentPage = 0;    // Pagina corrente (5 per volta)
+        let searchResults = [];
+        let currentPage = 0;
 
         function onYouTubeIframeAPIReady() {
             playerA = new YT.Player('playerA', { events: { 'onStateChange': (e) => syncUI('A', e.data) } });
@@ -132,86 +135,50 @@
         function renderPage() {
             const container = document.getElementById('search-results');
             let html = '';
-            
-            // 1. Mostra i 5 risultati della pagina corrente
             const start = currentPage * 5;
-            const end = start + 5;
-            const currentSet = searchResults.slice(start, end);
+            const currentSet = searchResults.slice(start, start + 5);
 
             for(let i=0; i<5; i++) {
                 if(currentSet[i]) {
-                    html += `
-                    <div class="result-card">
-                        <div style="font-size:0.75rem; color:#fff; overflow:hidden; white-space:nowrap;">${currentSet[i].title}</div>
+                    html += `<div class="result-card">
+                        <div style="font-size:0.75rem; color:#fff; overflow:hidden;">${currentSet[i].title}</div>
                         <div class="load-btns">
-                            <button onclick="load('${currentSet[i].id}', '${currentSet[i].title.replace(/'/g,"")}', 'A')">LOAD A</button>
-                            <button onclick="load('${currentSet[i].id}', '${currentSet[i].title.replace(/'/g,"")}', 'B')">LOAD B</button>
+                            <button onclick="load('${currentSet[i].id}', '${currentSet[i].title.replace(/'/g,"")}', 'A')">A</button>
+                            <button onclick="load('${currentSet[i].id}', '${currentSet[i].title.replace(/'/g,"")}', 'B')">B</button>
                         </div>
                     </div>`;
                 } else {
-                    html += `<div class="result-card empty-slot">NO DATA</div>`;
+                    html += `<div class="result-card" style="opacity:0.2; border-style:dashed;">NO DATA</div>`;
                 }
             }
 
-            // 2. Il 6° slot è il pannello di controllo < >
+            // NAV PANEL CON SOLO < E > GIGANTI
             const canPrev = currentPage > 0;
             const canNext = start + 5 < searchResults.length;
 
             html += `
             <div class="result-card nav-panel">
                 <button class="nav-btn" onclick="changePage(-1)" ${!canPrev ? 'disabled' : ''}>&lt;</button>
-                <div style="font-size:0.8rem; text-align:center;">PAGE<br>${currentPage + 1}</div>
                 <button class="nav-btn" onclick="changePage(1)" ${!canNext ? 'disabled' : ''}>&gt;</button>
             </div>`;
 
             container.innerHTML = html;
         }
 
-        function changePage(dir) {
-            currentPage += dir;
-            renderPage();
-        }
+        function changePage(dir) { currentPage += dir; renderPage(); }
 
-        /* FUNZIONI CORE (Audio, Pitch, Mixer) */
+        /* LOGICA AUDIO (VU METER, MIXER, ECC) */
         function load(id, title, deck) {
             const p = (deck === 'A' ? playerA : playerB);
             p.cueVideoById(id);
             document.getElementById('title-' + deck).innerText = title.toUpperCase();
             document.getElementById('platter-' + deck).style.backgroundImage = `url('https://img.youtube.com/vi/${id}/hqdefault.jpg')`;
         }
-
-        function toggleDeck(deck) {
-            const p = (deck === 'A' ? playerA : playerB);
-            p.getPlayerState() === 1 ? p.pauseVideo() : p.playVideo();
-        }
-
-        function syncUI(deck, state) {
-            const p = document.getElementById('platter-' + deck);
-            const b = document.getElementById('btn-play-' + deck);
-            state === 1 ? (p.classList.add('playing'), b.classList.add('active')) : (p.classList.remove('playing'), b.classList.remove('active'));
-        }
-
-        function updatePitch(deck, val) {
-            const p = (deck === 'A' ? playerA : playerB);
-            const s = parseFloat(val);
-            if(deck === 'A') pitchA = s; else pitchB = s;
-            document.getElementById('val-' + deck).innerText = s.toFixed(2) + 'x';
-            if(p.setPlaybackRate) p.setPlaybackRate(s);
-            document.getElementById('platter-' + deck).style.animationDuration = (3.33 / s) + 's';
-        }
-
-        function updateMixer() {
-            const x = document.getElementById('xfader').value / 100;
-            const fA = (100 - document.getElementById('faderA').value) / 100;
-            const fB = (100 - document.getElementById('faderB').value) / 100;
-            if(playerA.setVolume) playerA.setVolume(fA * Math.min(1, (1-x)*2) * 100);
-            if(playerB.setVolume) playerB.setVolume(fB * Math.min(1, x*2) * 100);
-        }
-
-        function initVU() {
-            ['vu-L', 'vu-R'].forEach(id => { document.getElementById(id).innerHTML = Array(30).fill('<div class="led"></div>').join(''); });
-        }
-
+        function toggleDeck(deck) { const p = (deck === 'A' ? playerA : playerB); p.getPlayerState() === 1 ? p.pauseVideo() : p.playVideo(); }
+        function syncUI(deck, state) { const p = document.getElementById('platter-' + deck); const b = document.getElementById('btn-play-' + deck); state === 1 ? (p.classList.add('playing'), b.classList.add('active')) : (p.classList.remove('playing'), b.classList.remove('active')); }
+        function updatePitch(deck, val) { const p = (deck === 'A' ? playerA : playerB); const s = parseFloat(val); if(deck === 'A') pitchA = s; else pitchB = s; document.getElementById('val-' + deck).innerText = s.toFixed(2) + 'x'; if(p.setPlaybackRate) p.setPlaybackRate(s); document.getElementById('platter-' + deck).style.animationDuration = (3.33 / s) + 's'; }
+        function updateMixer() { const x = document.getElementById('xfader').value / 100; const fA = (100 - document.getElementById('faderA').value) / 100; const fB = (100 - document.getElementById('faderB').value) / 100; if(playerA.setVolume) playerA.setVolume(fA * Math.min(1, (1-x)*2) * 100); if(playerB.setVolume) playerB.setVolume(fB * Math.min(1, x*2) * 100); }
+        function initVU() { ['vu-L', 'vu-R'].forEach(id => { document.getElementById(id).innerHTML = Array(30).fill('<div class="led"></div>').join(''); }); }
         function updateVU() {
             const now = Date.now();
             const fA = (100 - document.getElementById('faderA').value) / 100;
@@ -233,7 +200,6 @@
             });
             requestAnimationFrame(updateVU);
         }
-
         function unlock() { document.getElementById('overlay').style.display='none'; initVU(); updateVU(); }
     </script>
 </body>
