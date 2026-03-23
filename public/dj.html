@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOUTUBOX DJ ULTIMATE PRO</title>
+    <title>YOUTUBOX DJ STATION - CLEAN PRO</title>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
         :root { --amber: #ffb000; --red: #ff4444; --blue: #0088ff; --bg: #050505; --panel: #1a1a1a; }
@@ -15,7 +15,7 @@
         input[type=text] { flex: 1; background: #000; border: 1px solid var(--amber); color: var(--amber); padding: 10px; font-family: 'VT323'; font-size: 1.2rem; outline: none; }
         
         .sampler-grid { background: #222; padding: 10px; border-radius: 10px; border: 2px solid #333; display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
-        .btn-fx { background: #333; border: 1px solid var(--blue); color: var(--blue); font-family: 'VT323'; cursor: pointer; padding: 8px; font-size: 1rem; }
+        .btn-fx { background: #333; border: 1px solid var(--blue); color: var(--blue); font-family: 'VT323'; cursor: pointer; padding: 8px; font-size: 1rem; border-radius: 4px; }
         .btn-fx:active { background: var(--blue); color: #000; }
 
         /* RISULTATI RICERCA */
@@ -25,58 +25,49 @@
         .btn-load { flex: 1; padding: 5px; background: var(--amber); color: #000; border: none; cursor: pointer; font-weight: bold; font-family: 'VT323'; }
 
         /* DJ CONSOLE */
-        .dj-setup { display: grid; grid-template-columns: 1fr 240px 1fr; gap: 15px; background: #222; padding: 20px; border-radius: 15px; border: 4px solid #333; width: 100%; max-width: 1150px; }
-        .deck { background: var(--panel); padding: 15px; border-radius: 10px; border: 2px solid #333; text-align: center; }
+        .dj-setup { display: grid; grid-template-columns: 1fr 200px 1fr; gap: 15px; background: #222; padding: 20px; border-radius: 15px; border: 4px solid #333; width: 100%; max-width: 1150px; }
+        .deck { background: var(--panel); padding: 20px; border-radius: 10px; border: 2px solid #333; text-align: center; }
         
+        /* PLATTER CON THUMBNAIL */
         .platter { 
-            width: 200px; height: 200px; border-radius: 50%; border: 8px solid #111; 
+            width: 210px; height: 210px; border-radius: 50%; border: 10px solid #111; 
             margin: 10px auto; background-color: #111; background-size: cover; background-position: center;
             position: relative; animation: spin 3.5s linear infinite; animation-play-state: paused;
-            box-shadow: 0 0 20px rgba(0,0,0,0.8);
-            /* Effetto solchi vinile */
-            -webkit-mask-image: radial-gradient(circle, transparent 12%, black 13%);
+            box-shadow: 0 0 25px rgba(0,0,0,1);
             mask-image: radial-gradient(circle, transparent 12%, black 13%);
+            -webkit-mask-image: radial-gradient(circle, transparent 12%, black 13%);
         }
         .platter.playing { animation-play-state: running; }
-        .label-disc { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 50px; height: 50px; background: var(--amber); border-radius: 50%; border: 3px solid #000; opacity: 0.8; }
+        .label-disc { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 55px; height: 55px; background: var(--amber); border-radius: 50%; border: 4px solid #000; opacity: 0.9; }
 
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* EQ & MIXER */
-        .eq-group { display: flex; flex-direction: column; align-items: center; gap: 10px; margin: 10px 0; }
-        .knob-container { text-align: center; font-size: 0.7rem; }
-        .knob-ui { width: 35px; height: 35px; background: #333; border: 2px solid var(--amber); border-radius: 50%; margin: 2px auto; position: relative; transition: transform 0.1s; }
-        .knob-ui::after { content: ''; position: absolute; top: 2px; left: 50%; width: 2px; height: 8px; background: var(--amber); margin-left: -1px; }
+        /* MIXER CENTRALE */
+        .mixer { display: flex; flex-direction: column; align-items: center; justify-content: space-around; }
+        .faders-row { display: flex; gap: 30px; height: 120px; align-items: flex-end; }
+        .slider-v { appearance: slider-vertical; width: 25px; height: 100px; accent-color: var(--amber); cursor: pointer; }
         
-        .slider-v { appearance: slider-vertical; width: 20px; height: 80px; accent-color: var(--amber); }
-        .kill-btn { background: #441111; color: var(--red); border: 1px solid var(--red); padding: 5px; width: 100%; cursor: pointer; font-family: 'VT323'; margin-top: 5px; }
-        .kill-btn.active { background: var(--red); color: white; }
-
-        .mixer { display: flex; flex-direction: column; align-items: center; justify-content: space-between; border-left: 1px solid #333; border-right: 1px solid #333; }
-        .btn-siren { background: var(--red); color: white; width: 80px; height: 80px; border-radius: 50%; border: 4px solid #800; font-family: 'VT323'; font-size: 1.2rem; cursor: pointer; box-shadow: 0 4px 0 #600; margin: 15px 0; }
+        .btn-siren { background: var(--red); color: white; width: 75px; height: 75px; border-radius: 50%; border: 4px solid #800; font-family: 'VT323'; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 0 #600; margin: 10px 0; }
         .btn-siren:active { transform: translateY(4px); box-shadow: none; }
         
-        .xfader-container { width: 90%; background: #111; padding: 10px; border: 1px solid #444; border-radius: 5px; }
+        .xfader-container { width: 95%; background: #111; padding: 10px; border: 1px solid #444; border-radius: 5px; text-align: center; }
         input[type=range] { width: 100%; cursor: pointer; accent-color: var(--amber); }
 
         .lcd { background: #000; color: #0f0; padding: 5px; border: 1px solid #333; height: 30px; overflow: hidden; font-size: 0.9rem; margin-bottom: 10px; white-space: nowrap; }
         
         #playerA, #playerB { position: absolute; top: -5000px; }
-        #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 1000; display: flex; justify-content: center; align-items: center; cursor: pointer; text-align: center; }
+        #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 1000; display: flex; justify-content: center; align-items: center; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div id="overlay" onclick="unlock()">
-        <div>
-            <h1 style="font-size: 3rem;">YOUTUBOX DJ SYSTEM</h1>
-            <p>CLICCA PER ATTIVARE I MOTORI AUDIO E LE THUMBNAIL</p>
-        </div>
+        <h1 style="font-size: 2.5rem; text-align: center;">YOUTUBOX DJ STATION<br><span style="font-size: 1rem;">CLICCA PER INIZIARE IL SET</span></h1>
     </div>
 
     <div class="top-row">
         <div class="search-container">
-            <input type="text" id="query" placeholder="CERCA TRACCIA...">
+            <input type="text" id="query" placeholder="CERCA TRACCIA SU YOUTUBE...">
             <button class="btn-load" style="width:100px" onclick="search()">CERCA</button>
         </div>
         <div class="sampler-grid">
@@ -91,52 +82,32 @@
 
     <div class="dj-setup">
         <div class="deck">
-            <div class="lcd" id="title-A">CANALE A: VUOTO</div>
+            <div class="lcd" id="title-A">CANALE A: READY</div>
             <div id="platter-A" class="platter"><div class="label-disc"></div></div>
-            
-            <div class="eq-group">
-                <div style="display:flex; gap:10px">
-                    <div class="knob-container"><div id="k-A-h" class="knob-ui"></div>H</div>
-                    <div class="knob-container"><div id="k-A-m" class="knob-ui"></div>M</div>
-                    <div class="knob-container"><div id="k-A-l" class="knob-ui"></div>L</div>
-                </div>
-                <button class="kill-btn" id="kill-A" onclick="toggleKill('A')">KILL BASS</button>
-            </div>
-
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-top: 15px;">
                 <button class="btn-load" onclick="deckAction('A', 'play')">PLAY</button>
                 <button class="btn-load" style="background:#444" onclick="deckAction('A', 'pause')">PAUSA</button>
             </div>
         </div>
 
         <div class="mixer">
-            <div style="display:flex; gap:40px; margin-top:10px;">
-                <div style="text-align:center"><label>A</label><br><input type="range" id="faderA" class="slider-v" min="0" max="100" value="100" oninput="updateMixer()"></div>
-                <div style="text-align:center"><label>B</label><br><input type="range" id="faderB" class="slider-v" min="0" max="100" value="100" oninput="updateMixer()"></div>
+            <div class="faders-row">
+                <div style="text-align:center"><label>VOL A</label><br><input type="range" id="faderA" class="slider-v" min="0" max="100" value="100" oninput="updateMixer()"></div>
+                <div style="text-align:center"><label>VOL B</label><br><input type="range" id="faderB" class="slider-v" min="0" max="100" value="100" oninput="updateMixer()"></div>
             </div>
 
             <button class="btn-siren" onmousedown="siren(true)" onmouseup="siren(false)">DUB SIREN</button>
 
             <div class="xfader-container">
-                <label style="font-size:0.8rem">CROSSFADER</label>
+                <label style="font-size:0.7rem">CROSSFADER</label>
                 <input type="range" id="xfader" min="0" max="100" value="50" oninput="updateMixer()">
             </div>
         </div>
 
         <div class="deck">
-            <div class="lcd" id="title-B">CANALE B: VUOTO</div>
+            <div class="lcd" id="title-B">CANALE B: READY</div>
             <div id="platter-B" class="platter"><div class="label-disc"></div></div>
-
-            <div class="eq-group">
-                <div style="display:flex; gap:10px">
-                    <div class="knob-container"><div id="k-B-h" class="knob-ui"></div>H</div>
-                    <div class="knob-container"><div id="k-B-m" class="knob-ui"></div>M</div>
-                    <div class="knob-container"><div id="k-B-l" class="knob-ui"></div>L</div>
-                </div>
-                <button class="kill-btn" id="kill-B" onclick="toggleKill('B')">KILL BASS</button>
-            </div>
-
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-top: 15px;">
                 <button class="btn-load" onclick="deckAction('B', 'play')">PLAY</button>
                 <button class="btn-load" style="background:#444" onclick="deckAction('B', 'pause')">PAUSA</button>
             </div>
@@ -149,7 +120,6 @@
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
         let playerA, playerB;
-        let killA = false, killB = false;
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         let sirenOsc = null;
 
@@ -170,10 +140,10 @@
             const data = await res.json();
             document.getElementById('search-results').innerHTML = data.map(s => `
                 <div class="result-card">
-                    <div style="height:25px; overflow:hidden">${s.title}</div>
+                    <div style="height:25px; overflow:hidden; font-size:0.7rem;">${s.title}</div>
                     <div class="load-btns">
-                        <button class="btn-load" onclick="load('${s.id}', '${s.title.replace(/'/g,"")}', 'A')">LOAD A</button>
-                        <button class="btn-load" onclick="load('${s.id}', '${s.title.replace(/'/g,"")}', 'B')">LOAD B</button>
+                        <button class="btn-load" onclick="load('${s.id}', '${s.title.replace(/'/g,"")}', 'A')">A</button>
+                        <button class="btn-load" onclick="load('${s.id}', '${s.title.replace(/'/g,"")}', 'B')">B</button>
                     </div>
                 </div>
             `).join('');
@@ -182,25 +152,14 @@
         function load(id, title, deck) {
             const p = (deck === 'A' ? playerA : playerB);
             const platter = document.getElementById('platter-' + deck);
-            
-            // Carica video
             p.loadVideoById(id);
             document.getElementById('title-' + deck).innerText = deck + ": " + title;
-            
-            // Carica Thumbnail nel disco
-            const thumbUrl = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
-            platter.style.backgroundImage = `url('${thumbUrl}')`;
+            platter.style.backgroundImage = `url('https://img.youtube.com/vi/${id}/hqdefault.jpg')`;
         }
 
         function deckAction(deck, act) {
             const p = (deck === 'A') ? playerA : playerB;
             act === 'play' ? p.playVideo() : p.pauseVideo();
-        }
-
-        function toggleKill(deck) {
-            if(deck === 'A') killA = !killA; else killB = !killB;
-            document.getElementById('kill-' + deck).classList.toggle('active');
-            updateMixer();
         }
 
         function updateMixer() {
@@ -211,15 +170,8 @@
             let volA = Math.min(100, (100 - x) * 2) * (fA / 100);
             let volB = Math.min(100, x * 2) * (fB / 100);
 
-            if(killA) volA *= 0.3;
-            if(killB) volB *= 0.3;
-
             if(playerA && playerA.setVolume) playerA.setVolume(volA);
             if(playerB && playerB.setVolume) playerB.setVolume(volB);
-            
-            // Animazione manopole EQ (simulata)
-            document.getElementById('k-A-l').style.transform = `rotate(${volA*2.4-120}deg)`;
-            document.getElementById('k-B-l').style.transform = `rotate(${volB*2.4-120}deg)`;
         }
 
         function playSample(type) {
@@ -234,7 +186,7 @@
                 osc.frequency.exponentialRampToValueAtTime(100, now + 0.6);
                 gain.gain.setValueAtTime(0.3, now); gain.gain.linearRampToValueAtTime(0, now + 0.7);
             } else if(type === 'laser') {
-                osc.type = 'sine'; osc.frequency.setValueAtTime(2000, now);
+                osc.type = 'sine'; osc.frequency.setValueAtTime(1800, now);
                 osc.frequency.exponentialRampToValueAtTime(10, now + 0.4);
                 gain.gain.setValueAtTime(0.2, now); gain.gain.linearRampToValueAtTime(0, now + 0.4);
             } else if(type === 'alarm') {
@@ -243,7 +195,7 @@
                 osc.frequency.linearRampToValueAtTime(700, now + 0.4);
                 gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0, now + 0.5);
             } else {
-                osc.type = 'square'; osc.frequency.setValueAtTime(55, now);
+                osc.type = 'square'; osc.frequency.setValueAtTime(60, now);
                 gain.gain.setValueAtTime(0.3, now); gain.gain.linearRampToValueAtTime(0, now + 0.1);
             }
             osc.start(); osc.stop(now + 1);
@@ -258,7 +210,7 @@
                 sirenOsc.frequency.setValueAtTime(380, audioCtx.currentTime);
                 sirenOsc.frequency.exponentialRampToValueAtTime(760, audioCtx.currentTime + 0.2);
                 sirenOsc.frequency.exponentialRampToValueAtTime(380, audioCtx.currentTime + 0.4);
-                sirenOsc.loop = true; g.gain.value = 0.08;
+                sirenOsc.loop = true; g.gain.value = 0.1;
                 sirenOsc.connect(g); g.connect(audioCtx.destination);
                 sirenOsc.start();
             } else if (sirenOsc) { sirenOsc.stop(); sirenOsc = null; }
