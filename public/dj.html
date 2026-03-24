@@ -6,91 +6,72 @@
     <title>YOUTUBOX •DJ• PRO</title>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
-        :root { --amber: #ffb000; --bg: #050505; --panel: #151515; --fader-bg: #000; --silver: #bdc3c7; }
+        :root { --amber: #ffb000; --bg: #050505; --panel: #111; --silver: #ccc; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'VT323', monospace; }
         
-        body { background: #1a1a1a; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100dvh; overflow: hidden; }
+        body { background: #1a1a1a; margin: 0; display: flex; justify-content: center; align-items: center; height: 100dvh; overflow: hidden; }
 
-        /* BOX PER PC / MOBILE */
         .phone-frame {
-            width: 100%; max-width: 450px; height: 100dvh; background: var(--bg);
-            display: flex; flex-direction: column; position: relative;
-            box-shadow: 0 0 50px rgba(0,0,0,0.8); border-left: 1px solid #333; border-right: 1px solid #333;
+            width: 100%; max-width: 420px; height: 100%; background: var(--bg);
+            display: flex; flex-direction: column; position: relative; border: 1px solid #333;
         }
 
-        /* RICERCA & LOADING */
-        .search-area { padding: 15px; background: #000; border-bottom: 2px solid #222; z-index: 10; }
-        .search-row { display: flex; gap: 8px; }
-        input[type="text"] { flex: 1; background: #fff; border: none; color: #000; padding: 12px; font-size: 1.2rem; font-weight: bold; }
-        .btn-go { background: var(--amber); border: none; padding: 0 20px; color: #000; font-weight: bold; cursor: pointer; }
+        /* RICERCA */
+        .search-area { padding: 10px; background: #000; border-bottom: 1px solid #222; }
+        .search-row { display: flex; gap: 5px; height: 40px; }
+        input[type="text"] { flex: 1; background: #fff; border: none; color: #000; padding: 0 10px; font-size: 1.1rem; font-weight: bold; }
+        .btn-go { background: var(--amber); border: none; padding: 0 15px; color: #000; font-weight: bold; }
         
-        .loading-container { width: 100%; height: 4px; background: #111; margin-top: 10px; overflow: hidden; position: relative; }
-        #loading-bar { position: absolute; width: 0%; height: 100%; background: var(--amber); transition: width 0.3s; }
-        .loading-active { animation: progress 1.5s infinite linear; width: 40% !important; }
-        @keyframes progress { 0% { left: -40%; } 100% { left: 100%; } }
+        #loading-bar-wrap { width: 100%; height: 2px; background: #111; margin-top: 5px; overflow: hidden; }
+        #loading-bar { width: 0%; height: 100%; background: var(--amber); transition: width 0.3s; }
+        .loading-active { animation: l-anim 1.5s infinite linear; width: 30% !important; }
+        @keyframes l-anim { 0% { transform: translateX(-100%); } 100% { transform: translateX(400%); } }
 
-        /* BRAND & VU METER */
-        .mixer-header { padding: 10px; text-align: center; border-bottom: 1px solid #222; }
-        .vu-row { height: 8px; background: #000; display: flex; gap: 1px; border: 1px solid #333; margin: 2px 15px; }
-        .led { flex: 1; background: #111; transition: background 0.1s; }
+        /* BRAND & VU */
+        .brand-header { padding: 5px; text-align: center; }
+        .brand-name { font-size: 1.4rem; letter-spacing: 2px; color: var(--amber); margin-bottom: 5px; }
+        .vu-row { height: 6px; background: #000; display: flex; gap: 1px; border: 1px solid #222; margin: 1px 20px; }
+        .led { flex: 1; background: #1a1a1a; }
 
         /* DECKS */
-        .decks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; }
-        .deck { background: var(--panel); border: 1px solid #333; padding: 10px; display: flex; flex-direction: column; align-items: center; }
+        .decks-container { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; padding: 5px; }
+        .deck { background: var(--panel); border: 1px solid #222; padding: 8px 4px; display: flex; flex-direction: column; align-items: center; }
         
-        .platter { 
-            width: 100px; height: 100px; border-radius: 50%; border: 6px solid #000; 
-            background: #222 no-repeat center; background-size: cover;
-            box-shadow: 0 0 15px rgba(0,0,0,0.5);
-        }
-        .playing { animation: spin 2s linear infinite; }
+        .platter { width: 85px; height: 85px; border-radius: 50%; border: 4px solid #000; background: #222 no-repeat center; background-size: cover; }
+        .playing { animation: spin 2.5s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        .btn-play { 
-            width: 100%; margin: 15px 0; padding: 8px; background: #222; color: #555; 
-            border: 1px solid #444; font-size: 1.4rem; cursor: pointer;
-        }
-        .btn-play.active { color: #0f0; border-color: #0f0; background: #0a1a0a; }
+        .btn-start { width: 90%; margin: 8px 0; padding: 6px; background: #222; color: #666; border: 1px solid #333; font-size: 1.1rem; }
+        .btn-active { color: #0f0; border-color: #0f0; background: #0a150a; }
 
-        /* FADER STYLE NATIVE INSTRUMENTS */
-        .fader-group { display: flex; width: 100%; justify-content: space-around; gap: 15px; height: 140px; }
-        .fader-col { display: flex; flex-direction: column; align-items: center; flex: 1; }
-        .fader-label { font-size: 0.7rem; color: #666; margin-top: 8px; letter-spacing: 1px; }
+        /* SLIDERS CON SCALA GRADUATA */
+        .fader-section { display: flex; width: 100%; justify-content: space-around; height: 110px; padding-top: 5px; }
+        .fader-container { position: relative; width: 45px; height: 100px; display: flex; flex-direction: column; align-items: center; }
+        
+        /* Scala graduata (trattini) */
+        .scale { position: absolute; left: 5px; top: 0; height: 80px; width: 5px; border-left: 2px solid #333; display: flex; flex-direction: column; justify-content: space-between; }
+        .scale i { width: 4px; height: 1px; background: #333; }
 
-        /* Custom Range Input */
         input[type=range].v-fader {
-            -webkit-appearance: none; width: 120px; height: 30px;
-            background: #000; border: 1px solid #333;
-            transform: rotate(-90deg); margin-top: 45px;
+            -webkit-appearance: none; width: 80px; height: 20px; background: transparent;
+            transform: rotate(-90deg); position: absolute; top: 30px; z-index: 10;
         }
         input[type=range].v-fader::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 35px; height: 20px;
-            background: var(--silver); border: 1px solid #fff; border-radius: 2px;
-            box-shadow: 0 0 5px rgba(0,0,0,0.5); cursor: pointer;
+            -webkit-appearance: none; width: 30px; height: 18px; background: var(--silver); border: 1px solid #fff; border-radius: 1px;
         }
 
-        /* CROSSFADER AREA */
-        .crossfader-area { padding: 20px; background: #0a0a0a; border-top: 1px solid #222; }
-        input[type=range].h-fader {
-            -webkit-appearance: none; width: 100%; height: 10px;
-            background: #000; border: 1px solid #333;
-        }
-        input[type=range].h-fader::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 50px; height: 25px;
-            background: var(--silver); border: 1px solid #fff; cursor: pointer;
-        }
+        .fader-label { font-size: 0.6rem; color: #555; position: absolute; bottom: -5px; }
 
-        /* TRACK LIST TRAKTOR STYLE */
-        #results-list { flex: 1; overflow-y: auto; background: #000; border-top: 1px solid #333; }
-        .track-item { 
-            display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #111;
-            gap: 10px; transition: 0.2s;
-        }
-        .track-item:hover { background: #080808; }
-        .track-name { flex: 1; font-size: 1rem; color: #ccc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .load-btns { display: flex; gap: 8px; }
-        .btn-load { background: #1a1a1a; color: var(--amber); border: 1px solid #444; padding: 6px 12px; cursor: pointer; font-size: 0.9rem; }
-        .btn-load:active { background: var(--amber); color: #000; }
+        /* CROSSFADER */
+        .xfader-area { padding: 15px 20px; background: #0a0a0a; }
+        input[type=range].h-fader { -webkit-appearance: none; width: 100%; height: 8px; background: #000; border: 1px solid #222; }
+        input[type=range].h-fader::-webkit-slider-thumb { -webkit-appearance: none; width: 45px; height: 24px; background: var(--silver); border: 1px solid #fff; }
+
+        /* LISTA TRAKTOR */
+        #results-list { flex: 1; overflow-y: auto; background: #000; }
+        .track { display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #111; gap: 8px; }
+        .track-t { flex: 1; font-size: 0.85rem; color: #999; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .l-btn { background: #1a1a1a; color: var(--amber); border: 1px solid #333; padding: 4px 8px; font-size: 0.75rem; }
     </style>
 </head>
 <body>
@@ -98,150 +79,132 @@
     <div class="phone-frame">
         <div class="search-area">
             <div class="search-row">
-                <input type="text" id="query" placeholder="SEARCH TRAX..." onkeypress="if(event.key==='Enter') search()">
-                <button class="btn-go" onclick="search()">OK</button>
+                <input type="text" id="q" placeholder="SEARCH TRACK..." onkeypress="if(event.key==='Enter') doSearch()">
+                <button class="btn-go" onclick="doSearch()">OK</button>
             </div>
-            <div class="loading-container">
-                <div id="loading-bar"></div>
-            </div>
+            <div id="loading-bar-wrap"><div id="loading-bar"></div></div>
         </div>
 
-        <div class="mixer-header">
-            <div style="font-size: 1.2rem; margin-bottom: 5px;">YOUTUBOX •DJ•</div>
+        <div class="brand-header">
+            <div class="brand-name">YOUTUBOX •DJ•</div>
             <div class="vu-row" id="vuL"></div>
             <div class="vu-row" id="vuR"></div>
         </div>
 
-        <div class="decks-grid">
+        <div class="decks-container">
             <div class="deck">
-                <div id="platterA" class="platter"></div>
-                <button id="btnA" class="btn-play" onclick="toggle('A')">START</button>
-                <div class="fader-group">
-                    <div class="fader-col">
-                        <input type="range" id="volA" class="v-fader" min="0" max="100" value="100" oninput="updateMix()">
+                <div id="pA" class="platter"></div>
+                <button id="bA" class="btn-start" onclick="tk('A')">START</button>
+                <div class="fader-section">
+                    <div class="fader-container">
+                        <div class="scale"><i></i><i></i><i></i><i></i><i></i></div>
+                        <input type="range" id="volA" class="v-fader" min="0" max="100" value="100" oninput="mix()">
                         <div class="fader-label">VOL</div>
                     </div>
-                    <div class="fader-col">
-                        <input type="range" id="pitchA" class="v-fader" min="0.9" max="1.1" step="0.01" value="1.0" oninput="updateMix()">
+                    <div class="fader-container">
+                        <div class="scale"><i></i><i></i><i></i><i></i><i></i></div>
+                        <input type="range" id="pchA" class="v-fader" min="0.9" max="1.1" step="0.01" value="1.0" oninput="mix()">
                         <div class="fader-label">PCH</div>
                     </div>
                 </div>
             </div>
-
             <div class="deck">
-                <div id="platterB" class="platter"></div>
-                <button id="btnB" class="btn-play" onclick="toggle('B')">START</button>
-                <div class="fader-group">
-                    <div class="fader-col">
-                        <input type="range" id="volB" class="v-fader" min="0" max="100" value="100" oninput="updateMix()">
+                <div id="pB" class="platter"></div>
+                <button id="bB" class="btn-start" onclick="tk('B')">START</button>
+                <div class="fader-section">
+                    <div class="fader-container">
+                        <div class="scale"><i></i><i></i><i></i><i></i><i></i></div>
+                        <input type="range" id="volB" class="v-fader" min="0" max="100" value="100" oninput="mix()">
                         <div class="fader-label">VOL</div>
                     </div>
-                    <div class="fader-col">
-                        <input type="range" id="pitchB" class="v-fader" min="0.9" max="1.1" step="0.01" value="1.0" oninput="updateMix()">
+                    <div class="fader-container">
+                        <div class="scale"><i></i><i></i><i></i><i></i><i></i></div>
+                        <input type="range" id="pchB" class="v-fader" min="0.9" max="1.1" step="0.01" value="1.0" oninput="mix()">
                         <div class="fader-label">PCH</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="crossfader-area">
-            <input type="range" id="xfader" class="h-fader" min="0" max="100" value="50" oninput="updateMix()">
+        <div class="xfader-area">
+            <input type="range" id="xf" class="h-fader" min="0" max="100" value="50" oninput="mix()">
         </div>
 
         <div id="results-list"></div>
     </div>
 
-    <div style="display:none"><div id="playerA"></div><div id="playerB"></div></div>
+    <div style="display:none"><div id="ytA"></div><div id="ytB"></div></div>
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
         let pA, pB;
-
         function onYouTubeIframeAPIReady() {
-            const cfg = { height: '1', width: '1', playerVars: { 'controls': 0, 'disablekb': 1 } };
-            pA = new YT.Player('playerA', { ...cfg, events: { 'onStateChange': (e) => uiSync('A', e.data) } });
-            pB = new YT.Player('playerB', { ...cfg, events: { 'onStateChange': (e) => uiSync('B', e.data) } });
+            const c = { height: '1', width: '1', playerVars: { 'controls': 0, 'disablekb': 1 } };
+            pA = new YT.Player('ytA', { ...c, events: { 'onStateChange': (e) => sync('A', e.data) } });
+            pB = new YT.Player('ytB', { ...c, events: { 'onStateChange': (e) => sync('B', e.data) } });
         }
 
-        async function search() {
-            const q = document.getElementById('query').value;
+        async function doSearch() {
+            const q = document.getElementById('q').value;
             if(!q) return;
-            const bar = document.getElementById('loading-bar');
-            bar.classList.add('loading-active');
-            
+            document.getElementById('loading-bar').classList.add('loading-active');
             try {
                 const r = await fetch('/search?q=' + encodeURIComponent(q));
-                const list = await r.json();
-                renderList(list);
-            } finally {
-                bar.classList.remove('loading-active');
-            }
+                const d = await r.json();
+                document.getElementById('results-list').innerHTML = d.map(i => `
+                    <div class="track">
+                        <div class="track-t">${i.title.toUpperCase()}</div>
+                        <div style="display:flex;gap:4px">
+                            <button class="l-btn" onclick="ld('${i.id}','A')">A</button>
+                            <button class="l-btn" onclick="ld('${i.id}','B')">B</button>
+                        </div>
+                    </div>`).join('');
+            } finally { document.getElementById('loading-bar').classList.remove('loading-active'); }
         }
 
-        function renderList(list) {
-            document.getElementById('results-list').innerHTML = list.map(item => `
-                <div class="track-item">
-                    <div class="track-name">${item.title.toUpperCase()}</div>
-                    <div class="load-btns">
-                        <button class="btn-load" onclick="loadVideo('${item.id}', 'A', '${item.title.replace(/'/g,"")}')">LOAD A</button>
-                        <button class="btn-load" onclick="loadVideo('${item.id}', 'B', '${item.title.replace(/'/g,"")}')">LOAD B</button>
-                    </div>
-                </div>
-            `).join('');
+        function ld(id, d) {
+            (d === 'A' ? pA : pB).cueVideoById(id);
+            document.getElementById('p' + d).style.backgroundImage = `url('https://img.youtube.com/vi/${id}/hqdefault.jpg')`;
+            mix();
         }
 
-        function loadVideo(id, d, title) {
-            const player = (d === 'A' ? pA : pB);
-            player.cueVideoById(id);
-            document.getElementById('platter' + d).style.backgroundImage = `url('https://img.youtube.com/vi/${id}/hqdefault.jpg')`;
-            updateMix();
-        }
-
-        function updateMix() {
+        function mix() {
             if(!pA.setVolume || !pB.setVolume) return;
-            const x = document.getElementById('xfader').value / 100;
+            const x = document.getElementById('xf').value / 100;
             const vA = document.getElementById('volA').value * Math.min(1, (1-x)*2);
             const vB = document.getElementById('volB').value * Math.min(1, x*2);
-            
-            pA.setVolume(vA);
-            pB.setVolume(vB);
-            
-            if(pA.setPlaybackRate) pA.setPlaybackRate(parseFloat(document.getElementById('pitchA').value));
-            if(pB.setPlaybackRate) pB.setPlaybackRate(parseFloat(document.getElementById('pitchB').value));
+            pA.setVolume(vA); pB.setVolume(vB);
+            if(pA.setPlaybackRate) pA.setPlaybackRate(parseFloat(document.getElementById('pchA').value));
+            if(pB.setPlaybackRate) pB.setPlaybackRate(parseFloat(document.getElementById('pchB').value));
         }
 
-        function toggle(d) {
+        function tk(d) {
             const p = (d === 'A' ? pA : pB);
             p.getPlayerState() === 1 ? p.pauseVideo() : (p.unMute(), p.playVideo());
-            updateMix();
+            mix();
         }
 
-        function uiSync(d, s) {
-            const plat = document.getElementById('platter' + d);
-            const btn = document.getElementById('btn' + d);
-            if(s === 1) { plat.classList.add('playing'); btn.classList.add('active'); btn.innerText = "STOP"; }
-            else { plat.classList.remove('playing'); btn.classList.remove('active'); btn.innerText = "START"; }
+        function sync(d, s) {
+            const pl = document.getElementById('p' + d);
+            const bt = document.getElementById('b' + d);
+            if(s === 1) { pl.classList.add('playing'); bt.classList.add('btn-active'); bt.innerText = "STOP"; }
+            else { pl.classList.remove('playing'); bt.classList.remove('btn-active'); bt.innerText = "START"; }
         }
 
-        // INIT LEDS & VU METER
-        function initVU() {
-            ['vuL', 'vuR'].forEach(id => document.getElementById(id).innerHTML = Array(20).fill('<div class="led"></div>').join(''));
-            setInterval(() => {
-                const sA = (pA && pA.getPlayerState && pA.getPlayerState() === 1) ? 1 : 0;
-                const sB = (pB && pB.getPlayerState && pB.getPlayerState() === 1) ? 1 : 0;
-                const tot = (sA * (document.getElementById('volA').value/100) + sB * (document.getElementById('volB').value/100)) * (0.6 + Math.random()*0.4);
-                document.querySelectorAll('.led').forEach((l, i) => {
-                    l.style.background = i % 20 < (tot*20) ? (i % 20 < 13 ? '#0f0' : '#f00') : '#111';
-                });
-            }, 100);
-        }
+        // VU METER
+        setInterval(() => {
+            const sA = (pA && pA.getPlayerState && pA.getPlayerState() === 1) ? 1 : 0;
+            const sB = (pB && pB.getPlayerState && pB.getPlayerState() === 1) ? 1 : 0;
+            const tot = (sA * (document.getElementById('volA').value/100) + sB * (document.getElementById('volB').value/100)) * (0.6 + Math.random()*0.4);
+            document.querySelectorAll('.led').forEach((l, i) => {
+                l.style.background = (i % 20) < (tot * 20) ? (i % 20 < 13 ? '#0f0' : '#f00') : '#1a1a1a';
+            });
+        }, 100);
 
-        window.onload = initVU;
-
-        // FIX TOUCH PER MOBILE SLIDERS
-        document.querySelectorAll('input[type=range]').forEach(input => {
-            input.addEventListener('touchstart', e => e.stopPropagation(), {passive: true});
-            input.addEventListener('touchmove', e => e.stopPropagation(), {passive: true});
+        // Blocca scroll su slider per mobile
+        document.querySelectorAll('input[type=range]').forEach(el => {
+            el.addEventListener('touchstart', e => e.stopPropagation(), {passive:true});
+            el.addEventListener('touchmove', e => e.stopPropagation(), {passive:true});
         });
     </script>
 </body>
