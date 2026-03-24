@@ -11,17 +11,20 @@
         
         body { background: #1a1a1a; margin: 0; display: flex; justify-content: center; align-items: center; height: 100dvh; overflow: hidden; }
 
+        /* BOX PC / MOBILE */
         .phone-frame {
             width: 100%; max-width: 450px; height: 100%; background: var(--bg);
             display: flex; flex-direction: column; position: relative; border-left: 1px solid #333; border-right: 1px solid #333;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
         }
 
-        /* HEADER & SEARCH */
+        /* SEARCH AREA */
         .search-area { padding: 8px; background: #000; border-bottom: 1px solid #222; }
         .search-row { display: flex; gap: 5px; height: 38px; }
         input[type="text"] { flex: 1; background: #fff; border: none; color: #000; padding: 0 10px; font-size: 1.1rem; font-weight: bold; }
         .btn-go { background: var(--amber); border: none; padding: 0 15px; color: #000; font-weight: bold; cursor: pointer; }
 
+        /* HEADER */
         .brand-header { padding: 8px 0; text-align: center; }
         .brand-name { font-size: 1.8rem; color: var(--amber); text-shadow: 0 0 10px rgba(255,176,0,0.5); }
         .vu-row { height: 6px; background: #000; display: flex; gap: 1px; border: 1px solid #222; margin: 2px 25px; }
@@ -38,33 +41,29 @@
         .btn-start { width: 85%; margin: 10px 0; padding: 6px; background: #222; color: #555; border: 1px solid #333; font-size: 1.2rem; cursor: pointer; }
         .btn-active { color: #0f0; border-color: #0f0; background: #0a150a; }
 
-        /* UNIFORM SLIDER STYLE */
+        /* FADERS STYLE */
         input[type=range] { -webkit-appearance: none; background: transparent; outline: none; }
         
-        /* Cursore Standard (Silver Traktor) */
+        /* Cursore Rettangolare (Silver Traktor) */
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none; width: 38px; height: 22px; 
             background: var(--silver); border: 1px solid #fff; border-radius: 2px;
             box-shadow: 0 2px 5px #000;
         }
 
-        /* Faders Verticali */
         .fader-section { display: flex; width: 100%; justify-content: space-around; height: 180px; padding-top: 10px; position: relative; }
         .fader-container { position: relative; width: 40px; height: 160px; display: flex; justify-content: center; }
         .scale { position: absolute; left: 4px; top: 0; height: 160px; width: 6px; border-left: 1px solid #333; display: flex; flex-direction: column; justify-content: space-between; }
         .scale i { width: 4px; height: 1px; background: #333; }
 
-        .v-fader {
-            width: 160px; height: 40px; transform: rotate(-90deg); position: absolute; top: 60px; z-index: 5;
-        }
+        .v-fader { width: 160px; height: 40px; transform: rotate(-90deg); position: absolute; top: 60px; z-index: 5; }
 
         /* MIXER CENTER */
-        .mixer-center { padding: 20px; background: #080808; display: flex; flex-direction: column; gap: 30px; border-top: 1px solid #222; }
+        .mixer-center { padding: 15px 20px; background: #080808; display: flex; flex-direction: column; gap: 30px; border-top: 1px solid #222; }
         
-        /* FILTRO SPECIALE (Neon Glow) */
+        /* FILTRO NEON */
         .filter-wrap { width: 100%; text-align: center; }
         .filter-label { font-size: 0.8rem; color: #666; margin-bottom: 10px; display: block; }
-        
         .filter-slider { width: 100%; height: 6px !important; background: #000 !important; border: 1px solid #444 !important; border-radius: 10px; }
         
         .filter-slider::-webkit-slider-thumb {
@@ -73,11 +72,11 @@
             border-radius: 50% !important; 
             background: #111 !important;
             border: 2px solid var(--amber) !important;
-            box-shadow: 0 0 15px var(--amber), inset 0 0 5px var(--amber) !important; /* EFFETTO NEON */
+            box-shadow: 0 0 15px var(--amber), inset 0 0 5px var(--amber) !important;
             cursor: pointer;
         }
 
-        /* Crossfader Standard */
+        /* CROSSFADER */
         .h-fader { width: 100%; height: 12px; background: #000; border: 1px solid #222; }
         .h-fader::-webkit-slider-thumb { width: 55px !important; height: 30px !important; }
 
@@ -206,18 +205,41 @@
             else { pl.classList.remove('playing'); bt.classList.remove('btn-active'); bt.innerText = "START"; }
         }
 
-        setInterval(() => {
-            const sA = (pA && pA.getPlayerState && pA.getPlayerState() === 1) ? 1 : 0;
-            const sB = (pB && pB.getPlayerState && pB.getPlayerState() === 1) ? 1 : 0;
-            const tot = (sA * (document.getElementById('volA').value/100) + sB * (document.getElementById('volB').value/100)) * (0.6 + Math.random()*0.4);
-            document.querySelectorAll('.led').forEach((l, i) => {
-                l.style.background = (i % 20) < (tot * 20) ? (i % 20 < 14 ? '#0f0' : '#f00') : '#151515';
-            });
-        }, 100);
+        // DOUBLE TAP RESET LOGIC
+        function setupDoubleTap(elementId, resetValue) {
+            const el = document.getElementById(elementId);
+            let lastTap = 0;
+            el.addEventListener('touchstart', (e) => {
+                const now = Date.now();
+                if (now - lastTap < 300) {
+                    el.value = resetValue;
+                    mix();
+                    e.preventDefault();
+                }
+                lastTap = now;
+                e.stopPropagation();
+            }, { passive: false });
+        }
 
-        // Mobile Fix for Sliders
+        // Inizializzazione controlli mobile
+        window.onload = () => {
+            setupDoubleTap('pchA', 1.0);
+            setupDoubleTap('pchB', 1.0);
+            setupDoubleTap('filter', 0);
+
+            // VU Meter Loop
+            setInterval(() => {
+                const sA = (pA && pA.getPlayerState && pA.getPlayerState() === 1) ? 1 : 0;
+                const sB = (pB && pB.getPlayerState && pB.getPlayerState() === 1) ? 1 : 0;
+                const tot = (sA * (document.getElementById('volA').value/100) + sB * (document.getElementById('volB').value/100)) * (0.6 + Math.random()*0.4);
+                document.querySelectorAll('.led').forEach((l, i) => {
+                    l.style.background = (i % 20) < (tot * 20) ? (i % 20 < 14 ? '#0f0' : '#f00') : '#151515';
+                });
+            }, 100);
+        };
+
+        // Touch Fix generale
         document.querySelectorAll('input[type=range]').forEach(el => {
-            el.addEventListener('touchstart', e => e.stopPropagation(), {passive:true});
             el.addEventListener('touchmove', e => e.stopPropagation(), {passive:true});
         });
     </script>
