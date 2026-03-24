@@ -3,168 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>YOUTUBOX •DJ•</title>
+    <title>YOUTUBOX •DJ• PRO</title>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
-        :root { --amber: #ffb000; --bg: #000; --panel: #111; --grey: #222; }
+        :root { --amber: #ffb000; --bg: #050505; --panel: #151515; --fader-bg: #000; --silver: #bdc3c7; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'VT323', monospace; }
         
-        body { background: var(--bg); color: var(--amber); margin: 0; padding: 0; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; }
+        body { background: #1a1a1a; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100dvh; overflow: hidden; }
 
-        /* SEZIONE RICERCA */
-        .search-area { background: #000; padding: 10px; border-bottom: 1px solid #333; position: relative; }
-        .search-row { display: flex; gap: 5px; }
-        input[type="text"] { flex: 1; background: #fff; border: none; color: #000; padding: 10px; font-size: 1.2rem; font-weight: bold; }
-        .btn-go { background: var(--amber); border: none; padding: 0 15px; color: #000; font-weight: bold; }
-        
-        /* Loading Bar Traktor Style */
-        #loading-bar { position: absolute; bottom: 0; left: 0; height: 3px; background: var(--amber); width: 0%; transition: width 0.3s; box-shadow: 0 0 10px var(--amber); }
-        .loading-active { animation: load-anim 2s infinite ease-in-out; }
-        @keyframes load-anim { 0% { left: -30%; width: 30%; } 100% { left: 100%; width: 30%; } }
-
-        /* BRAND & VU METER */
-        .brand-header { padding: 5px; text-align: center; border-bottom: 1px solid #222; }
-        .vu-container { display: flex; flex-direction: column; gap: 2px; padding: 5px 20px; }
-        .vu-row { height: 6px; background: #111; display: flex; gap: 1px; border: 1px solid #333; }
-        .led { flex: 1; background: #222; }
-
-        /* DECKS AREA */
-        .decks-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; flex-shrink: 0; }
-        .deck { background: var(--panel); border: 1px solid #333; padding: 10px; display: flex; flex-direction: column; align-items: center; }
-        
-        .platter { width: 100px; height: 100px; border-radius: 50%; border: 4px solid #000; background: #222 no-repeat center; background-size: cover; box-shadow: inset 0 0 20px #000; transition: transform 0.1s linear; }
-        .playing { animation: spin 3s linear infinite; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        .btn-action { width: 100%; margin: 10px 0; padding: 10px; background: #222; color: #666; border: 1px solid #444; font-size: 1.1rem; }
-        .btn-active { color: #0f0; border-color: #0f0; box-shadow: 0 0 5px #0f0; }
-
-        /* SLIDERS NATIVI (Verticali) */
-        .controls-row { display: flex; width: 100%; justify-content: space-around; gap: 10px; height: 120px; }
-        .slider-wrap { display: flex; flex-direction: column; align-items: center; flex: 1; }
-        .slider-wrap span { font-size: 0.7rem; color: #555; margin-top: 5px; }
-        
-        input[type="range"].v-range { 
-            writing-mode: bt-lr; /* IE */
-            appearance: slider-vertical; /* Webkit */
-            width: 25px; height: 100px; background: #000; 
+        /* BOX PER PC / MOBILE */
+        .phone-frame {
+            width: 100%; max-width: 450px; height: 100dvh; background: var(--bg);
+            display: flex; flex-direction: column; position: relative;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8); border-left: 1px solid #333; border-right: 1px solid #333;
         }
 
-        /* CROSSFADER & LISTA */
-        .footer-mixer { padding: 10px; background: #080808; border-top: 1px solid #222; }
-        #xfader { width: 100%; height: 30px; appearance: none; background: #111; border: 1px solid #333; }
-        #xfader::-webkit-slider-thumb { appearance: none; width: 40px; height: 28px; background: var(--silver); border: 1px solid #fff; cursor: pointer; }
+        /* RICERCA & LOADING */
+        .search-area { padding: 15px; background: #000; border-bottom: 2px solid #222; z-index: 10; }
+        .search-row { display: flex; gap: 8px; }
+        input[type="text"] { flex: 1; background: #fff; border: none; color: #000; padding: 12px; font-size: 1.2rem; font-weight: bold; }
+        .btn-go { background: var(--amber); border: none; padding: 0 20px; color: #000; font-weight: bold; cursor: pointer; }
+        
+        .loading-container { width: 100%; height: 4px; background: #111; margin-top: 10px; overflow: hidden; position: relative; }
+        #loading-bar { position: absolute; width: 0%; height: 100%; background: var(--amber); transition: width 0.3s; }
+        .loading-active { animation: progress 1.5s infinite linear; width: 40% !important; }
+        @keyframes progress { 0% { left: -40%; } 100% { left: 100%; } }
 
-        #results-list { flex: 1; overflow-y: auto; background: #050505; border-top: 2px solid #222; }
-        .track-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #111; gap: 10px; }
-        .track-item:active { background: #111; }
-        .track-info { flex: 1; font-size: 0.9rem; color: #fff; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-        .load-btns { display: flex; gap: 5px; }
-        .mini-btn { background: #222; color: var(--amber); border: 1px solid #444; padding: 5px 10px; font-size: 0.8rem; }
+        /* BRAND & VU METER */
+        .mixer-header { padding: 10px; text-align: center; border-bottom: 1px solid #222; }
+        .vu-row { height: 8px; background: #000; display: flex; gap: 1px; border: 1px solid #333; margin: 2px 15px; }
+        .led { flex: 1; background: #111; transition: background 0.1s; }
+
+        /* DECKS */
+        .decks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; }
+        .deck { background: var(--panel); border: 1px solid #333; padding: 10px; display: flex; flex-direction: column; align-items: center; }
+        
+        .platter { 
+            width: 100px; height: 100px; border-radius: 50%; border: 6px solid #000; 
+            background: #222 no-repeat center; background-size: cover;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
+        .playing { animation: spin 2s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .btn-play { 
+            width: 100%; margin: 15px 0; padding: 8px; background: #222; color: #555; 
+            border: 1px solid #444; font-size: 1.4rem; cursor: pointer;
+        }
+        .btn-play.active { color: #0f0; border-color: #0f0; background: #0a1a0a; }
+
+        /* FADER STYLE NATIVE INSTRUMENTS */
+        .fader-group { display: flex; width: 100%; justify-content: space-around; gap: 15px; height: 140px; }
+        .fader-col { display: flex; flex-direction: column; align-items: center; flex: 1; }
+        .fader-label { font-size: 0.7rem; color: #666; margin-top: 8px; letter-spacing: 1px; }
+
+        /* Custom Range Input */
+        input[type=range].v-fader {
+            -webkit-appearance: none; width: 120px; height: 30px;
+            background: #000; border: 1px solid #333;
+            transform: rotate(-90deg); margin-top: 45px;
+        }
+        input[type=range].v-fader::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 35px; height: 20px;
+            background: var(--silver); border: 1px solid #fff; border-radius: 2px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5); cursor: pointer;
+        }
+
+        /* CROSSFADER AREA */
+        .crossfader-area { padding: 20px; background: #0a0a0a; border-top: 1px solid #222; }
+        input[type=range].h-fader {
+            -webkit-appearance: none; width: 100%; height: 10px;
+            background: #000; border: 1px solid #333;
+        }
+        input[type=range].h-fader::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 50px; height: 25px;
+            background: var(--silver); border: 1px solid #fff; cursor: pointer;
+        }
+
+        /* TRACK LIST TRAKTOR STYLE */
+        #results-list { flex: 1; overflow-y: auto; background: #000; border-top: 1px solid #333; }
+        .track-item { 
+            display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #111;
+            gap: 10px; transition: 0.2s;
+        }
+        .track-item:hover { background: #080808; }
+        .track-name { flex: 1; font-size: 1rem; color: #ccc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .load-btns { display: flex; gap: 8px; }
+        .btn-load { background: #1a1a1a; color: var(--amber); border: 1px solid #444; padding: 6px 12px; cursor: pointer; font-size: 0.9rem; }
+        .btn-load:active { background: var(--amber); color: #000; }
     </style>
 </head>
 <body>
 
-    <div class="search-area">
-        <div class="search-row">
-            <input type="text" id="q" placeholder="SEARCH TRACK..." spellcheck="false">
-            <button class="btn-go" onclick="search()">OK</button>
+    <div class="phone-frame">
+        <div class="search-area">
+            <div class="search-row">
+                <input type="text" id="query" placeholder="SEARCH TRAX..." onkeypress="if(event.key==='Enter') search()">
+                <button class="btn-go" onclick="search()">OK</button>
+            </div>
+            <div class="loading-container">
+                <div id="loading-bar"></div>
+            </div>
         </div>
-        <div id="loading-bar"></div>
-    </div>
 
-    <div class="brand-header">
-        <div>YOUTUBOX •DJ•</div>
-        <div class="vu-container">
+        <div class="mixer-header">
+            <div style="font-size: 1.2rem; margin-bottom: 5px;">YOUTUBOX •DJ•</div>
             <div class="vu-row" id="vuL"></div>
             <div class="vu-row" id="vuR"></div>
         </div>
-    </div>
 
-    <div class="decks-container">
-        <div class="deck">
-            <div id="pA" class="platter"></div>
-            <button id="btnA" class="btn-action" onclick="toggle('A')">START</button>
-            <div class="controls-row">
-                <div class="slider-wrap">
-                    <input type="range" id="volA" class="v-range" min="0" max="100" value="100" oninput="updateAudio()">
-                    <span>VOL</span>
+        <div class="decks-grid">
+            <div class="deck">
+                <div id="platterA" class="platter"></div>
+                <button id="btnA" class="btn-play" onclick="toggle('A')">START</button>
+                <div class="fader-group">
+                    <div class="fader-col">
+                        <input type="range" id="volA" class="v-fader" min="0" max="100" value="100" oninput="updateMix()">
+                        <div class="fader-label">VOL</div>
+                    </div>
+                    <div class="fader-col">
+                        <input type="range" id="pitchA" class="v-fader" min="0.9" max="1.1" step="0.01" value="1.0" oninput="updateMix()">
+                        <div class="fader-label">PCH</div>
+                    </div>
                 </div>
-                <div class="slider-wrap">
-                    <input type="range" id="pitchA" class="v-range" min="0.9" max="1.1" step="0.01" value="1.0" oninput="updateAudio()">
-                    <span>PITCH</span>
+            </div>
+
+            <div class="deck">
+                <div id="platterB" class="platter"></div>
+                <button id="btnB" class="btn-play" onclick="toggle('B')">START</button>
+                <div class="fader-group">
+                    <div class="fader-col">
+                        <input type="range" id="volB" class="v-fader" min="0" max="100" value="100" oninput="updateMix()">
+                        <div class="fader-label">VOL</div>
+                    </div>
+                    <div class="fader-col">
+                        <input type="range" id="pitchB" class="v-fader" min="0.9" max="1.1" step="0.01" value="1.0" oninput="updateMix()">
+                        <div class="fader-label">PCH</div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="deck">
-            <div id="pB" class="platter"></div>
-            <button id="btnB" class="btn-action" onclick="toggle('B')">START</button>
-            <div class="controls-row">
-                <div class="slider-wrap">
-                    <input type="range" id="volB" class="v-range" min="0" max="100" value="100" oninput="updateAudio()">
-                    <span>VOL</span>
-                </div>
-                <div class="slider-wrap">
-                    <input type="range" id="pitchB" class="v-range" min="0.9" max="1.1" step="0.01" value="1.0" oninput="updateAudio()">
-                    <span>PITCH</span>
-                </div>
-            </div>
+
+        <div class="crossfader-area">
+            <input type="range" id="xfader" class="h-fader" min="0" max="100" value="50" oninput="updateMix()">
         </div>
+
+        <div id="results-list"></div>
     </div>
 
-    <div class="footer-mixer">
-        <input type="range" id="xfader" min="0" max="100" value="50" oninput="updateAudio()">
-    </div>
-
-    <div id="results-list"></div>
-
-    <div style="position:absolute; top:-999px"><div id="playerA"></div><div id="playerB"></div></div>
+    <div style="display:none"><div id="playerA"></div><div id="playerB"></div></div>
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
         let pA, pB;
-        
+
         function onYouTubeIframeAPIReady() {
             const cfg = { height: '1', width: '1', playerVars: { 'controls': 0, 'disablekb': 1 } };
-            pA = new YT.Player('playerA', { ...cfg, events: { 'onStateChange': (e) => syncUI('A', e.data) } });
-            pB = new YT.Player('playerB', { ...cfg, events: { 'onStateChange': (e) => syncUI('B', e.data) } });
+            pA = new YT.Player('playerA', { ...cfg, events: { 'onStateChange': (e) => uiSync('A', e.data) } });
+            pB = new YT.Player('playerB', { ...cfg, events: { 'onStateChange': (e) => uiSync('B', e.data) } });
         }
 
         async function search() {
-            const q = document.getElementById('q').value;
+            const q = document.getElementById('query').value;
             if(!q) return;
             const bar = document.getElementById('loading-bar');
             bar.classList.add('loading-active');
             
             try {
                 const r = await fetch('/search?q=' + encodeURIComponent(q));
-                const items = await r.json();
-                renderList(items);
+                const list = await r.json();
+                renderList(list);
             } finally {
                 bar.classList.remove('loading-active');
             }
         }
 
-        function renderList(items) {
-            document.getElementById('results-list').innerHTML = items.map(i => `
+        function renderList(list) {
+            document.getElementById('results-list').innerHTML = list.map(item => `
                 <div class="track-item">
-                    <div class="track-info">${i.title.toUpperCase()}</div>
+                    <div class="track-name">${item.title.toUpperCase()}</div>
                     <div class="load-btns">
-                        <button class="mini-btn" onclick="load('${i.id}', 'A', '${i.title.replace(/'/g,"")}')">A</button>
-                        <button class="mini-btn" onclick="load('${i.id}', 'B', '${i.title.replace(/'/g,"")}')">B</button>
+                        <button class="btn-load" onclick="loadVideo('${item.id}', 'A', '${item.title.replace(/'/g,"")}')">LOAD A</button>
+                        <button class="btn-load" onclick="loadVideo('${item.id}', 'B', '${item.title.replace(/'/g,"")}')">LOAD B</button>
                     </div>
                 </div>
             `).join('');
         }
 
-        function load(id, deck, title) {
-            const p = (deck === 'A' ? pA : pB);
-            p.cueVideoById(id);
-            document.getElementById('p' + deck).style.backgroundImage = `url('https://img.youtube.com/vi/${id}/hqdefault.jpg')`;
-            updateAudio();
+        function loadVideo(id, d, title) {
+            const player = (d === 'A' ? pA : pB);
+            player.cueVideoById(id);
+            document.getElementById('platter' + d).style.backgroundImage = `url('https://img.youtube.com/vi/${id}/hqdefault.jpg')`;
+            updateMix();
         }
 
-        function updateAudio() {
+        function updateMix() {
             if(!pA.setVolume || !pB.setVolume) return;
             const x = document.getElementById('xfader').value / 100;
             const vA = document.getElementById('volA').value * Math.min(1, (1-x)*2);
@@ -180,37 +213,36 @@
         function toggle(d) {
             const p = (d === 'A' ? pA : pB);
             p.getPlayerState() === 1 ? p.pauseVideo() : (p.unMute(), p.playVideo());
-            updateAudio();
+            updateMix();
         }
 
-        function syncUI(d, s) {
-            const plat = document.getElementById('p' + d);
+        function uiSync(d, s) {
+            const plat = document.getElementById('platter' + d);
             const btn = document.getElementById('btn' + d);
             if(s === 1) { plat.classList.add('playing'); btn.classList.add('active'); btn.innerText = "STOP"; }
             else { plat.classList.remove('playing'); btn.classList.remove('active'); btn.innerText = "START"; }
         }
 
-        // VU METER LOOP
+        // INIT LEDS & VU METER
         function initVU() {
-            document.getElementById('vuL').innerHTML = Array(20).fill('<div class="led"></div>').join('');
-            document.getElementById('vuR').innerHTML = Array(20).fill('<div class="led"></div>').join('');
-            
+            ['vuL', 'vuR'].forEach(id => document.getElementById(id).innerHTML = Array(20).fill('<div class="led"></div>').join(''));
             setInterval(() => {
                 const sA = (pA && pA.getPlayerState && pA.getPlayerState() === 1) ? 1 : 0;
                 const sB = (pB && pB.getPlayerState && pB.getPlayerState() === 1) ? 1 : 0;
-                const tot = (sA * (document.getElementById('volA').value/100) + sB * (document.getElementById('volB').value/100)) * (0.7 + Math.random()*0.3);
-                
-                document.querySelectorAll('.vu-row').forEach(row => {
-                    row.querySelectorAll('.led').forEach((l, i) => {
-                        l.style.background = i < (tot*20) ? (i < 13 ? '#0f0' : '#f00') : '#222';
-                    });
+                const tot = (sA * (document.getElementById('volA').value/100) + sB * (document.getElementById('volB').value/100)) * (0.6 + Math.random()*0.4);
+                document.querySelectorAll('.led').forEach((l, i) => {
+                    l.style.background = i % 20 < (tot*20) ? (i % 20 < 13 ? '#0f0' : '#f00') : '#111';
                 });
             }, 100);
         }
-        
+
         window.onload = initVU;
-        // Impedisce lo scrolling quando si toccano gli slider
-        document.addEventListener('touchmove', (e) => { if(e.target.type === 'range') e.preventDefault(); }, {passive: false});
+
+        // FIX TOUCH PER MOBILE SLIDERS
+        document.querySelectorAll('input[type=range]').forEach(input => {
+            input.addEventListener('touchstart', e => e.stopPropagation(), {passive: true});
+            input.addEventListener('touchmove', e => e.stopPropagation(), {passive: true});
+        });
     </script>
 </body>
 </html>
