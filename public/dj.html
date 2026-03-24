@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>YOUTUBOX >>DJ<<</title>
+    <title>YOUTUB<>X >>DJ<<</title>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
         :root { --amber: #ffb000; --bg: #050505; --panel: #111; --silver: #bdc3c7; }
@@ -11,23 +11,26 @@
         
         body { background: #1a1a1a; margin: 0; display: flex; justify-content: center; align-items: center; height: 100dvh; overflow: hidden; }
 
-        /* BOX PC / MOBILE */
         .phone-frame {
             width: 100%; max-width: 450px; height: 100%; background: var(--bg);
             display: flex; flex-direction: column; position: relative; border-left: 1px solid #333; border-right: 1px solid #333;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
         }
 
-        /* SEARCH AREA */
+        /* SEARCH & LOADING */
         .search-area { padding: 8px; background: #000; border-bottom: 1px solid #222; }
         .search-row { display: flex; gap: 5px; height: 38px; }
         input[type="text"] { flex: 1; background: #fff; border: none; color: #000; padding: 0 10px; font-size: 1.1rem; font-weight: bold; }
         .btn-go { background: var(--amber); border: none; padding: 0 15px; color: #000; font-weight: bold; cursor: pointer; }
+        
+        #load-bar-container { width: 100%; height: 3px; background: #111; margin-top: 5px; position: relative; overflow: hidden; opacity: 0; transition: opacity 0.3s; }
+        #load-bar { width: 40%; height: 100%; background: var(--amber); position: absolute; animation: loading 1.5s infinite linear; }
+        @keyframes loading { from { left: -40%; } to { left: 100%; } }
 
         /* HEADER */
         .brand-header { padding: 8px 0; text-align: center; }
         .brand-name { font-size: 1.8rem; color: var(--amber); text-shadow: 0 0 10px rgba(255,176,0,0.5); }
-        .vu-row { height: 6px; background: #000; display: flex; gap: 1px; border: 1px solid #222; margin: 2px 25px; }
+        .vu-container { padding: 0 25px; margin-top: 5px; }
+        .vu-row { height: 6px; background: #000; display: flex; gap: 1px; border: 1px solid #222; margin-bottom: 2px; }
         .led { flex: 1; background: #151515; }
 
         /* DECKS */
@@ -38,13 +41,11 @@
         .playing { animation: spin 3s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        .btn-start { width: 85%; margin: 10px 0; padding: 6px; background: #222; color: #555; border: 1px solid #333; font-size: 1.2rem; cursor: pointer; }
-        .btn-active { color: #0f0; border-color: #0f0; background: #0a150a; }
+        .btn-start { width: 85%; margin: 10px 0; padding: 6px; background: #222; color: #555; border: 1px solid #333; font-size: 1.2rem; cursor: pointer; transition: 0.2s; }
+        .btn-active { color: #0f0; border-color: #0f0; background: #0a150a; box-shadow: 0 0 8px rgba(0,255,0,0.2); }
 
         /* FADERS STYLE */
         input[type=range] { -webkit-appearance: none; background: transparent; outline: none; }
-        
-        /* Cursore Rettangolare (Silver Traktor) */
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none; width: 38px; height: 22px; 
             background: var(--silver); border: 1px solid #fff; border-radius: 2px;
@@ -55,7 +56,6 @@
         .fader-container { position: relative; width: 40px; height: 160px; display: flex; justify-content: center; }
         .scale { position: absolute; left: 4px; top: 0; height: 160px; width: 6px; border-left: 1px solid #333; display: flex; flex-direction: column; justify-content: space-between; }
         .scale i { width: 4px; height: 1px; background: #333; }
-
         .v-fader { width: 160px; height: 40px; transform: rotate(-90deg); position: absolute; top: 60px; z-index: 5; }
 
         /* MIXER CENTER */
@@ -63,17 +63,12 @@
         
         /* FILTRO NEON */
         .filter-wrap { width: 100%; text-align: center; }
-        .filter-label { font-size: 0.8rem; color: #666; margin-bottom: 10px; display: block; }
+        .filter-label { font-size: 0.8rem; color: #666; margin-bottom: 8px; display: block; }
         .filter-slider { width: 100%; height: 6px !important; background: #000 !important; border: 1px solid #444 !important; border-radius: 10px; }
-        
         .filter-slider::-webkit-slider-thumb {
-            -webkit-appearance: none; 
-            width: 26px !important; height: 26px !important; 
-            border-radius: 50% !important; 
-            background: #111 !important;
-            border: 2px solid var(--amber) !important;
-            box-shadow: 0 0 15px var(--amber), inset 0 0 5px var(--amber) !important;
-            cursor: pointer;
+            -webkit-appearance: none; width: 26px !important; height: 26px !important; 
+            border-radius: 50% !important; background: #111 !important; border: 2px solid var(--amber) !important;
+            box-shadow: 0 0 15px var(--amber); cursor: pointer;
         }
 
         /* CROSSFADER */
@@ -95,12 +90,15 @@
                 <input type="text" id="q" placeholder="SEARCH TRAX..." onkeypress="if(event.key==='Enter') doSearch()">
                 <button class="btn-go" onclick="doSearch()">OK</button>
             </div>
+            <div id="load-bar-container"><div id="load-bar"></div></div>
         </div>
 
         <div class="brand-header">
-            <div class="brand-name">YOUTUBOX >>DJ<<</div>
-            <div class="vu-row" id="vuL"></div>
-            <div class="vu-row" id="vuR"></div>
+            <div class="brand-name">YOUTUB<>X >>DJ<<</div>
+            <div class="vu-container">
+                <div class="vu-row" id="vuL"></div>
+                <div class="vu-row" id="vuR"></div>
+            </div>
         </div>
 
         <div class="decks-container">
@@ -118,6 +116,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="deck">
                 <div id="pB" class="platter"></div>
                 <button id="bB" class="btn-start" onclick="tk('B')">START</button>
@@ -152,15 +151,32 @@
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
         let pA, pB;
+        
+        // Inizializza LED VU Meter
+        function createLEDs() {
+            ['vuL', 'vuR'].forEach(id => {
+                const row = document.getElementById(id);
+                for(let i=0; i<20; i++) {
+                    const led = document.createElement('div');
+                    led.className = 'led';
+                    row.appendChild(led);
+                }
+            });
+        }
+
         function onYouTubeIframeAPIReady() {
-            const c = { height: '1', width: '1', playerVars: { 'controls': 0, 'disablekb': 1 } };
-            pA = new YT.Player('ytA', { ...c, events: { 'onStateChange': (e) => sync('A', e.data) } });
-            pB = new YT.Player('ytB', { ...c, events: { 'onStateChange': (e) => sync('B', e.data) } });
+            const cfg = { height: '1', width: '1', playerVars: { 'controls': 0, 'disablekb': 1 } };
+            pA = new YT.Player('ytA', { ...cfg, events: { 'onStateChange': (e) => sync('A', e.data) } });
+            pB = new YT.Player('ytB', { ...cfg, events: { 'onStateChange': (e) => sync('B', e.data) } });
+            createLEDs();
+            startVUMeters();
         }
 
         async function doSearch() {
             const q = document.getElementById('q').value;
             if(!q) return;
+            const lbar = document.getElementById('load-bar-container');
+            lbar.style.opacity = "1";
             try {
                 const r = await fetch('/search?q=' + encodeURIComponent(q));
                 const d = await r.json();
@@ -171,6 +187,7 @@
                         <button class="l-btn" onclick="ld('${i.id}','B')">B</button>
                     </div>`).join('');
             } catch(e) {}
+            lbar.style.opacity = "0";
         }
 
         function ld(id, d) {
@@ -183,10 +200,8 @@
             if(!pA || !pA.setVolume) return;
             const x = document.getElementById('xf').value / 100;
             const fVal = Math.abs(document.getElementById('filter').value) / 250;
-            
             const vA = document.getElementById('volA').value * Math.min(1, (1-x)*2) * (1 - fVal);
             const vB = document.getElementById('volB').value * Math.min(1, x*2) * (1 - fVal);
-            
             pA.setVolume(vA); pB.setVolume(vB);
             pA.setPlaybackRate(parseFloat(document.getElementById('pchA').value));
             pB.setPlaybackRate(parseFloat(document.getElementById('pchB').value));
@@ -205,7 +220,29 @@
             else { pl.classList.remove('playing'); bt.classList.remove('btn-active'); bt.innerText = "START"; }
         }
 
-        // DOUBLE TAP RESET LOGIC
+        function startVUMeters() {
+            setInterval(() => {
+                const sA = (pA && pA.getPlayerState && pA.getPlayerState() === 1) ? 1 : 0;
+                const sB = (pB && pB.getPlayerState && pB.getPlayerState() === 1) ? 1 : 0;
+                const vA = sA * (document.getElementById('volA').value / 100) * (0.5 + Math.random() * 0.5);
+                const vB = sB * (document.getElementById('volB').value / 100) * (0.5 + Math.random() * 0.5);
+                updateRow('vuL', vA);
+                updateRow('vuR', vB);
+            }, 80);
+        }
+
+        function updateRow(id, val) {
+            const leds = document.getElementById(id).querySelectorAll('.led');
+            const active = Math.floor(val * leds.length);
+            leds.forEach((l, i) => {
+                if(i < active) {
+                    l.style.background = i < 14 ? '#0f0' : (i < 17 ? '#ff0' : '#f00');
+                } else {
+                    l.style.background = '#151515';
+                }
+            });
+        }
+
         function setupDoubleTap(elementId, resetValue) {
             const el = document.getElementById(elementId);
             let lastTap = 0;
@@ -221,27 +258,12 @@
             }, { passive: false });
         }
 
-        // Inizializzazione controlli mobile
         window.onload = () => {
-            setupDoubleTap('pchA', 1.0);
-            setupDoubleTap('pchB', 1.0);
-            setupDoubleTap('filter', 0);
-
-            // VU Meter Loop
-            setInterval(() => {
-                const sA = (pA && pA.getPlayerState && pA.getPlayerState() === 1) ? 1 : 0;
-                const sB = (pB && pB.getPlayerState && pB.getPlayerState() === 1) ? 1 : 0;
-                const tot = (sA * (document.getElementById('volA').value/100) + sB * (document.getElementById('volB').value/100)) * (0.6 + Math.random()*0.4);
-                document.querySelectorAll('.led').forEach((l, i) => {
-                    l.style.background = (i % 20) < (tot * 20) ? (i % 20 < 14 ? '#0f0' : '#f00') : '#151515';
-                });
-            }, 100);
+            setupDoubleTap('pchA', 1.0); setupDoubleTap('pchB', 1.0); setupDoubleTap('filter', 0);
+            document.querySelectorAll('input[type=range]').forEach(el => {
+                el.addEventListener('touchmove', e => e.stopPropagation(), {passive:true});
+            });
         };
-
-        // Touch Fix generale
-        document.querySelectorAll('input[type=range]').forEach(el => {
-            el.addEventListener('touchmove', e => e.stopPropagation(), {passive:true});
-        });
     </script>
 </body>
 </html>
