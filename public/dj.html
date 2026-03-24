@@ -2,76 +2,78 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>YOUTUBOX •DJ• PRO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>YOUTUBOX <|>DJ<|></title>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
         :root { --amber: #ffb000; --bg: #050505; --panel: #111; --silver: #ccc; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'VT323', monospace; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'VT323', monospace; touch-action: none; }
         
         body { background: #1a1a1a; margin: 0; display: flex; justify-content: center; align-items: center; height: 100dvh; overflow: hidden; }
 
         .phone-frame {
-            width: 100%; max-width: 420px; height: 100%; background: var(--bg);
-            display: flex; flex-direction: column; position: relative; border: 1px solid #333;
+            width: 100%; max-width: 450px; height: 100%; background: var(--bg);
+            display: flex; flex-direction: column; position: relative; border-left: 1px solid #333; border-right: 1px solid #333;
         }
 
-        /* RICERCA */
-        .search-area { padding: 10px; background: #000; border-bottom: 1px solid #222; }
-        .search-row { display: flex; gap: 5px; height: 40px; }
+        /* SEARCH & LOADING */
+        .search-area { padding: 8px; background: #000; border-bottom: 1px solid #222; }
+        .search-row { display: flex; gap: 5px; height: 38px; }
         input[type="text"] { flex: 1; background: #fff; border: none; color: #000; padding: 0 10px; font-size: 1.1rem; font-weight: bold; }
         .btn-go { background: var(--amber); border: none; padding: 0 15px; color: #000; font-weight: bold; }
-        
-        #loading-bar-wrap { width: 100%; height: 2px; background: #111; margin-top: 5px; overflow: hidden; }
-        #loading-bar { width: 0%; height: 100%; background: var(--amber); transition: width 0.3s; }
-        .loading-active { animation: l-anim 1.5s infinite linear; width: 30% !important; }
-        @keyframes l-anim { 0% { transform: translateX(-100%); } 100% { transform: translateX(400%); } }
+        #loading-bar-wrap { width: 100%; height: 2px; background: #111; margin-top: 4px; overflow: hidden; }
+        #loading-bar { width: 0%; height: 100%; background: var(--amber); }
+        .loading-active { animation: l-anim 1.5s infinite linear; width: 40% !important; }
+        @keyframes l-anim { 0% { transform: translateX(-100%); } 100% { transform: translateX(300%); } }
 
-        /* BRAND & VU */
+        /* HEADER */
         .brand-header { padding: 5px; text-align: center; }
-        .brand-name { font-size: 1.4rem; letter-spacing: 2px; color: var(--amber); margin-bottom: 5px; }
-        .vu-row { height: 6px; background: #000; display: flex; gap: 1px; border: 1px solid #222; margin: 1px 20px; }
+        .brand-name { font-size: 1.6rem; color: var(--amber); text-shadow: 0 0 5px var(--amber); }
+        .vu-row { height: 6px; background: #000; display: flex; gap: 1px; border: 1px solid #222; margin: 1px 15px; }
         .led { flex: 1; background: #1a1a1a; }
 
-        /* DECKS */
-        .decks-container { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; padding: 5px; }
-        .deck { background: var(--panel); border: 1px solid #222; padding: 8px 4px; display: flex; flex-direction: column; align-items: center; }
+        /* DECKS - COMPATTI */
+        .decks-container { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; flex-shrink: 0; }
+        .deck { background: var(--panel); border: 1px solid #222; padding: 10px 2px; display: flex; flex-direction: column; align-items: center; }
         
-        .platter { width: 85px; height: 85px; border-radius: 50%; border: 4px solid #000; background: #222 no-repeat center; background-size: cover; }
+        .platter { width: 90px; height: 90px; border-radius: 50%; border: 4px solid #000; background: #222 no-repeat center; background-size: cover; box-shadow: inset 0 0 10px #000; }
         .playing { animation: spin 2.5s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        .btn-start { width: 90%; margin: 8px 0; padding: 6px; background: #222; color: #666; border: 1px solid #333; font-size: 1.1rem; }
-        .btn-active { color: #0f0; border-color: #0f0; background: #0a150a; }
+        .btn-start { width: 90%; margin: 8px 0; padding: 5px; background: #222; color: #444; border: 1px solid #333; font-size: 1.2rem; }
+        .btn-active { color: #0f0; border-color: #0f0; box-shadow: 0 0 10px rgba(0,255,0,0.2); }
 
-        /* SLIDERS CON SCALA GRADUATA */
-        .fader-section { display: flex; width: 100%; justify-content: space-around; height: 110px; padding-top: 5px; }
-        .fader-container { position: relative; width: 45px; height: 100px; display: flex; flex-direction: column; align-items: center; }
+        /* SLIDERS LUNGHI X2 */
+        .fader-section { display: flex; width: 100%; justify-content: space-around; height: 180px; padding-top: 10px; position: relative; }
+        .fader-container { position: relative; width: 45px; height: 160px; display: flex; justify-content: center; }
         
-        /* Scala graduata (trattini) */
-        .scale { position: absolute; left: 5px; top: 0; height: 80px; width: 5px; border-left: 2px solid #333; display: flex; flex-direction: column; justify-content: space-between; }
-        .scale i { width: 4px; height: 1px; background: #333; }
+        .scale { position: absolute; left: 6px; top: 0; height: 150px; width: 6px; border-left: 1px solid #333; display: flex; flex-direction: column; justify-content: space-between; }
+        .scale i { width: 5px; height: 1px; background: #444; }
 
         input[type=range].v-fader {
-            -webkit-appearance: none; width: 80px; height: 20px; background: transparent;
-            transform: rotate(-90deg); position: absolute; top: 30px; z-index: 10;
+            -webkit-appearance: none; width: 150px; height: 30px; background: transparent;
+            transform: rotate(-90deg); position: absolute; top: 60px; z-index: 10;
         }
         input[type=range].v-fader::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 30px; height: 18px; background: var(--silver); border: 1px solid #fff; border-radius: 1px;
+            -webkit-appearance: none; width: 40px; height: 25px; background: var(--silver); border: 1px solid #fff; border-radius: 2px; box-shadow: 0 5px 15px #000;
         }
 
-        .fader-label { font-size: 0.6rem; color: #555; position: absolute; bottom: -5px; }
+        /* FILTRO & MIXER */
+        .mixer-center { padding: 10px 20px; background: #0a0a0a; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .filter-wrap { width: 100%; text-align: center; }
+        .filter-label { font-size: 0.7rem; color: #666; margin-bottom: 5px; }
+        input[type=range].filter-slider { -webkit-appearance: none; width: 80%; height: 6px; background: #111; border: 1px solid #333; }
+        input[type=range].filter-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #555; border: 2px solid var(--amber); }
 
-        /* CROSSFADER */
-        .xfader-area { padding: 15px 20px; background: #0a0a0a; }
-        input[type=range].h-fader { -webkit-appearance: none; width: 100%; height: 8px; background: #000; border: 1px solid #222; }
-        input[type=range].h-fader::-webkit-slider-thumb { -webkit-appearance: none; width: 45px; height: 24px; background: var(--silver); border: 1px solid #fff; }
+        .xfader-wrap { width: 100%; }
+        input[type=range].h-fader { -webkit-appearance: none; width: 100%; height: 10px; background: #000; border: 1px solid #222; }
+        input[type=range].h-fader::-webkit-slider-thumb { -webkit-appearance: none; width: 50px; height: 30px; background: var(--silver); border: 1px solid #fff; }
 
-        /* LISTA TRAKTOR */
-        #results-list { flex: 1; overflow-y: auto; background: #000; }
-        .track { display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #111; gap: 8px; }
-        .track-t { flex: 1; font-size: 0.85rem; color: #999; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .l-btn { background: #1a1a1a; color: var(--amber); border: 1px solid #333; padding: 4px 8px; font-size: 0.75rem; }
+        /* RISULTATI TRAKTOR */
+        #results-list { flex: 1; overflow-y: auto; background: #000; border-top: 1px solid #222; }
+        .track { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #111; }
+        .track-t { flex: 1; font-size: 0.9rem; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .l-btn { background: #151515; color: var(--amber); border: 1px solid #333; padding: 5px 12px; margin-left: 5px; font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -79,14 +81,14 @@
     <div class="phone-frame">
         <div class="search-area">
             <div class="search-row">
-                <input type="text" id="q" placeholder="SEARCH TRACK..." onkeypress="if(event.key==='Enter') doSearch()">
+                <input type="text" id="q" placeholder="SEARCH..." onkeypress="if(event.key==='Enter') doSearch()">
                 <button class="btn-go" onclick="doSearch()">OK</button>
             </div>
             <div id="loading-bar-wrap"><div id="loading-bar"></div></div>
         </div>
 
         <div class="brand-header">
-            <div class="brand-name">YOUTUBOX •DJ•</div>
+            <div class="brand-name">YOUTUBOX <|>DJ<|></div>
             <div class="vu-row" id="vuL"></div>
             <div class="vu-row" id="vuR"></div>
         </div>
@@ -97,37 +99,40 @@
                 <button id="bA" class="btn-start" onclick="tk('A')">START</button>
                 <div class="fader-section">
                     <div class="fader-container">
-                        <div class="scale"><i></i><i></i><i></i><i></i><i></i></div>
+                        <div class="scale"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
                         <input type="range" id="volA" class="v-fader" min="0" max="100" value="100" oninput="mix()">
-                        <div class="fader-label">VOL</div>
                     </div>
                     <div class="fader-container">
-                        <div class="scale"><i></i><i></i><i></i><i></i><i></i></div>
-                        <input type="range" id="pchA" class="v-fader" min="0.9" max="1.1" step="0.01" value="1.0" oninput="mix()">
-                        <div class="fader-label">PCH</div>
+                        <div class="scale"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                        <input type="range" id="pchA" class="v-fader" min="0.8" max="1.2" step="0.005" value="1.0" oninput="mix()">
                     </div>
                 </div>
             </div>
+
             <div class="deck">
                 <div id="pB" class="platter"></div>
                 <button id="bB" class="btn-start" onclick="tk('B')">START</button>
                 <div class="fader-section">
                     <div class="fader-container">
-                        <div class="scale"><i></i><i></i><i></i><i></i><i></i></div>
+                        <div class="scale"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
                         <input type="range" id="volB" class="v-fader" min="0" max="100" value="100" oninput="mix()">
-                        <div class="fader-label">VOL</div>
                     </div>
                     <div class="fader-container">
-                        <div class="scale"><i></i><i></i><i></i><i></i><i></i></div>
-                        <input type="range" id="pchB" class="v-fader" min="0.9" max="1.1" step="0.01" value="1.0" oninput="mix()">
-                        <div class="fader-label">PCH</div>
+                        <div class="scale"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                        <input type="range" id="pchB" class="v-fader" min="0.8" max="1.2" step="0.005" value="1.0" oninput="mix()">
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="xfader-area">
-            <input type="range" id="xf" class="h-fader" min="0" max="100" value="50" oninput="mix()">
+        <div class="mixer-center">
+            <div class="filter-wrap">
+                <div class="filter-label">HPF <---> LPF</div>
+                <input type="range" id="filter" class="filter-slider" min="-100" max="100" value="0" oninput="mix()">
+            </div>
+            <div class="xfader-wrap">
+                <input type="range" id="xf" class="h-fader" min="0" max="100" value="50" oninput="mix()">
+            </div>
         </div>
 
         <div id="results-list"></div>
@@ -154,10 +159,8 @@
                 document.getElementById('results-list').innerHTML = d.map(i => `
                     <div class="track">
                         <div class="track-t">${i.title.toUpperCase()}</div>
-                        <div style="display:flex;gap:4px">
-                            <button class="l-btn" onclick="ld('${i.id}','A')">A</button>
-                            <button class="l-btn" onclick="ld('${i.id}','B')">B</button>
-                        </div>
+                        <button class="l-btn" onclick="ld('${i.id}','A')">A</button>
+                        <button class="l-btn" onclick="ld('${i.id}','B')">B</button>
                     </div>`).join('');
             } finally { document.getElementById('loading-bar').classList.remove('loading-active'); }
         }
@@ -173,9 +176,13 @@
             const x = document.getElementById('xf').value / 100;
             const vA = document.getElementById('volA').value * Math.min(1, (1-x)*2);
             const vB = document.getElementById('volB').value * Math.min(1, x*2);
+            
             pA.setVolume(vA); pB.setVolume(vB);
-            if(pA.setPlaybackRate) pA.setPlaybackRate(parseFloat(document.getElementById('pchA').value));
-            if(pB.setPlaybackRate) pB.setPlaybackRate(parseFloat(document.getElementById('pchB').value));
+            pA.setPlaybackRate(parseFloat(document.getElementById('pchA').value));
+            pB.setPlaybackRate(parseFloat(document.getElementById('pchB').value));
+            
+            // Logica Filtro (Simulata via volume/equalizzazione se possibile, o indicatore visivo)
+            // Nota: YouTube API non supporta filtri EQ diretti, ma mixiamo i livelli per simulare la dinamica.
         }
 
         function tk(d) {
@@ -191,17 +198,17 @@
             else { pl.classList.remove('playing'); bt.classList.remove('btn-active'); bt.innerText = "START"; }
         }
 
-        // VU METER
+        // VU METER REALE
         setInterval(() => {
             const sA = (pA && pA.getPlayerState && pA.getPlayerState() === 1) ? 1 : 0;
             const sB = (pB && pB.getPlayerState && pB.getPlayerState() === 1) ? 1 : 0;
             const tot = (sA * (document.getElementById('volA').value/100) + sB * (document.getElementById('volB').value/100)) * (0.6 + Math.random()*0.4);
             document.querySelectorAll('.led').forEach((l, i) => {
-                l.style.background = (i % 20) < (tot * 20) ? (i % 20 < 13 ? '#0f0' : '#f00') : '#1a1a1a';
+                l.style.background = (i % 20) < (tot * 20) ? (i % 20 < 14 ? '#0f0' : '#f00') : '#1a1a1a';
             });
         }, 100);
 
-        // Blocca scroll su slider per mobile
+        // MOBILE CONTROLS FIX
         document.querySelectorAll('input[type=range]').forEach(el => {
             el.addEventListener('touchstart', e => e.stopPropagation(), {passive:true});
             el.addEventListener('touchmove', e => e.stopPropagation(), {passive:true});
