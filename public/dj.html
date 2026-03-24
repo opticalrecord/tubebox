@@ -4,100 +4,109 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>YOUTUBOX DJ - PRO CONSOLE</title>
+    <title>YOUTUBOX DJ - FINAL STABLE</title>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
-        :root { --amber: #ffb000; --bg: #050505; --panel: #0a0a0a; --silver: #cccccc; --led-off: #111; }
-        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-        body, html { background: var(--bg); color: var(--amber); font-family: 'VT323', monospace; margin: 0; padding: 0; width: 100%; height: 100dvh; overflow: hidden; position: fixed; }
+        :root { --amber: #ffb000; --bg: #050505; --panel: #0a0a0a; --silver: #cccccc; }
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+        body, html { background: var(--bg); color: var(--amber); font-family: 'VT323', monospace; margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; position: fixed; }
 
-        /* Overlay */
+        /* OVERLAY */
         #mobile-overlay { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
         #btn-fullscreen { display: none; background: var(--amber); color: #000; border: none; padding: 15px 40px; font-family: 'VT323'; font-size: 2rem; font-weight: bold; cursor: pointer; }
         @media (orientation: portrait) { #status-msg { display: block; } #btn-fullscreen { display: none; } }
         @media (orientation: landscape) { #status-msg { display: none; } #btn-fullscreen { display: block; } }
 
-        /* Console */
+        /* INTERFACCIA */
         .main-wrapper { display: none; flex-direction: column; align-items: center; width: 100%; height: 100%; padding: 5px; }
         
-        /* Search Box Fixed */
+        /* SEARCH BOX - TESTO NERO */
         .search-container { width: 95%; background: var(--amber); border: 2px solid #000; display: flex; padding: 2px; margin-bottom: 5px; }
         input[type=text] { flex: 1; background: #fff; border: none; color: #000; font-family: 'VT323'; font-size: 1.2rem; padding: 5px 10px; font-weight: bold; }
         .btn-search { background: #000; color: var(--amber); border: none; padding: 0 20px; font-family: 'VT323'; font-weight: bold; cursor: pointer; }
-        .btn-search.loading { animation: pulse 1s infinite; opacity: 0.6; pointer-events: none; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        .loading-pulse { animation: pulse 1s infinite; opacity: 0.5; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
 
-        #search-results { width: 95%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-bottom: 5px; min-height: 50px; }
-        .result-card { background: #0d0d0d; border: 1px solid #333; padding: 4px; height: 50px; display: flex; flex-direction: column; justify-content: space-between; font-size: 0.6rem; }
-        .load-btn { background: #222; color: var(--amber); border: 1px solid var(--amber); font-family: 'VT323'; cursor: pointer; font-size: 0.7rem; }
+        #search-results { width: 95%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; height: 50px; margin-bottom: 5px; }
+        .result-card { background: #0d0d0d; border: 1px solid #333; padding: 4px; display: flex; flex-direction: column; justify-content: space-between; font-size: 0.6rem; }
+        .load-btn { background: #222; color: var(--amber); border: 1px solid var(--amber); cursor: pointer; font-size: 0.7rem; font-family: 'VT323'; }
 
-        /* Console DJ */
+        /* CONSOLE */
         .dj-setup { display: grid; grid-template-columns: 1fr 0.8fr 1fr; gap: 8px; width: 100%; flex: 1; }
         .deck { background: var(--panel); border: 1px solid #222; display: flex; align-items: center; justify-content: space-around; padding: 5px; }
         
-        .slider-box { display: flex; flex-direction: column; align-items: center; width: 35px; height: 100%; }
-        .track-v { width: 25px; height: 100px; background: #000; border: 1px solid #333; position: relative; }
-        .c-slider-v { appearance: none; background: transparent; transform: rotate(-90deg); width: 100px; height: 25px; position: absolute; top: 37px; left: -37px; z-index: 10; cursor: pointer; }
-        .c-slider-v::-webkit-slider-thumb { appearance: none; width: 25px; height: 18px; background: var(--silver); border: 1px solid #fff; border-radius: 2px; }
+        /* SLIDERS */
+        .slider-box { display: flex; flex-direction: column; align-items: center; width: 40px; height: 100px; position: relative; }
+        .track-v { width: 20px; height: 80px; background: #000; border: 1px solid #333; position: relative; }
+        .c-slider-v { 
+            appearance: none; background: transparent; transform: rotate(-90deg); 
+            width: 80px; height: 40px; position: absolute; top: 20px; left: -20px; z-index: 50; cursor: pointer; 
+        }
+        .c-slider-v::-webkit-slider-thumb { appearance: none; width: 25px; height: 20px; background: var(--silver); border: 1px solid #fff; }
 
         .mixer { display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .vu-meter { width: 100%; background: #000; padding: 2px; border: 1px solid #333; margin-bottom: 10px; }
-        .vu-row { display: flex; gap: 1px; height: 5px; margin-bottom: 1px; }
-        .led { flex: 1; background: var(--led-off); }
+        .vu-meter { width: 100%; background: #000; padding: 2px; border: 1px solid #333; margin-bottom: 8px; }
+        .vu-row { display: flex; gap: 1px; height: 4px; margin-bottom: 1px; }
+        .led { flex: 1; background: #111; }
 
-        #xfader { appearance: none; width: 80%; height: 8px; background: #111; border: 1px solid #333; margin-top: 15px; }
-        #xfader::-webkit-slider-thumb { appearance: none; width: 40px; height: 20px; background: var(--silver); cursor: pointer; border-radius: 2px; }
+        #xfader { appearance: none; width: 80%; height: 10px; background: #111; border: 1px solid #333; z-index: 50; }
+        #xfader::-webkit-slider-thumb { appearance: none; width: 35px; height: 25px; background: var(--silver); cursor: pointer; }
 
-        .platter { width: 85px; height: 85px; border-radius: 50%; border: 4px solid #111; background-size: cover; animation: spin 3s linear infinite; animation-play-state: paused; position: relative; }
+        .platter { width: 80px; height: 80px; border-radius: 50%; border: 4px solid #111; background-size: cover; animation: spin 3s linear infinite; animation-play-state: paused; }
         .platter.playing { animation-play-state: running; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         
-        .btn-play { width: 100%; background: #111; color: #444; border: 1px solid #333; font-family: 'VT323'; margin-top: 5px; cursor: pointer; font-size: 1rem; }
-        .btn-play.active { color: #0f0; border-color: #0f0; background: #051505; }
-        .yt-hidden { position: absolute; top: -9999px; }
+        .btn-play { width: 100%; background: #111; color: #444; border: 1px solid #333; font-family: 'VT323'; font-size: 1.2rem; margin-top: 5px; cursor: pointer; }
+        .btn-play.active { color: #0f0; border-color: #0f0; }
+        .yt-hidden { position: absolute; top: -9999px; left: -9999px; visibility: hidden; }
     </style>
 </head>
 <body>
 
     <div id="mobile-overlay">
-        <div id="status-msg"><h2>RUOTA IL TELEFONO</h2><p>Entra in orizzontale per mixare</p></div>
-        <button id="btn-fullscreen" onclick="launchDJ()">AVVIA YOUTUBOX</button>
+        <div id="status-msg"><h2>RUOTA IL TELEFONO</h2><p>Usa la modalità orizzontale</p></div>
+        <button id="btn-fullscreen" onclick="startJukebox()">AVVIA CONSOLE</button>
     </div>
 
-    <div class="main-wrapper" id="console">
+    <div class="main-wrapper" id="app-ui">
         <div class="search-container">
-            <input type="text" id="query" placeholder="CERCA UN BRANO..." spellcheck="false">
-            <button class="btn-search" id="search-btn" onclick="search()">CERCA</button>
+            <input type="text" id="query" placeholder="CERCA MUSICA..." spellcheck="false">
+            <button class="btn-search" id="s-btn" onclick="runSearch()">CERCA</button>
         </div>
         <div id="search-results"></div>
 
         <div class="dj-setup">
             <div class="deck">
-                <div class="slider-box"><div class="track-v"><input type="range" id="pitchA" class="c-slider-v" min="0.9" max="1.1" step="0.01" value="1.0" oninput="applySettings()"></div><span style="font-size:0.5rem">PITCH</span></div>
+                <div class="slider-box">
+                    <div class="track-v"><input type="range" id="pitchA" class="c-slider-v" min="0.9" max="1.1" step="0.01" value="1.0" oninput="syncMixer()"></div>
+                    <span style="font-size:0.5rem">PITCH</span>
+                </div>
                 <div class="deck-center">
-                    <div id="title-A" style="font-size:0.5rem; color:#0f0; margin-bottom:2px; height:12px; overflow:hidden;">DECK A</div>
-                    <div id="platter-A" class="platter"></div>
-                    <button id="btn-play-A" class="btn-play" onclick="toggleDeck('A')">START</button>
+                    <div id="tA" style="font-size:0.5rem; color:#0f0; height:12px; overflow:hidden;">DECK A</div>
+                    <div id="pA" class="platter"></div>
+                    <button id="playA" class="btn-play" onclick="control('A')">START</button>
                 </div>
             </div>
 
             <div class="mixer">
-                <div style="font-size:0.8rem; letter-spacing:1px;">YOUTUBOX •DJ•</div>
-                <div class="vu-meter"><div class="vu-row" id="vu-L"></div><div class="vu-row" id="vu-R"></div></div>
-                <div style="display:flex; gap:12px;">
-                    <div class="slider-box"><div class="track-v"><input type="range" id="volA" class="c-slider-v" min="0" max="100" value="100" oninput="applySettings()"></div><span style="font-size:0.5rem">VOL A</span></div>
-                    <div class="slider-box"><div class="track-v"><input type="range" id="volB" class="c-slider-v" min="0" max="100" value="100" oninput="applySettings()"></div><span style="font-size:0.5rem">VOL B</span></div>
+                <div class="vu-meter"><div class="vu-row" id="vuL"></div><div class="vu-row" id="vuR"></div></div>
+                <div style="display:flex; gap:10px;">
+                    <div class="slider-box"><div class="track-v"><input type="range" id="volA" class="c-slider-v" min="0" max="100" value="100" oninput="syncMixer()"></div><span style="font-size:0.5rem">VOL A</span></div>
+                    <div class="slider-box"><div class="track-v"><input type="range" id="volB" class="c-slider-v" min="0" max="100" value="100" oninput="syncMixer()"></div><span style="font-size:0.5rem">VOL B</span></div>
                 </div>
-                <input type="range" id="xfader" min="0" max="100" value="50" oninput="applySettings()">
+                <input type="range" id="xfader" min="0" max="100" value="50" oninput="syncMixer()">
             </div>
 
             <div class="deck">
                 <div class="deck-center">
-                    <div id="title-B" style="font-size:0.5rem; color:#0f0; margin-bottom:2px; height:12px; overflow:hidden;">DECK B</div>
-                    <div id="platter-B" class="platter"></div>
-                    <button id="btn-play-B" class="btn-play" onclick="toggleDeck('B')">START</button>
+                    <div id="tB" style="font-size:0.5rem; color:#0f0; height:12px; overflow:hidden;">DECK B</div>
+                    <div id="pB" class="platter"></div>
+                    <button id="playB" class="btn-play" onclick="control('B')">START</button>
                 </div>
-                <div class="slider-box"><div class="track-v"><input type="range" id="pitchB" class="c-slider-v" min="0.9" max="1.1" step="0.01" value="1.0" oninput="applySettings()"></div><span style="font-size:0.5rem">PITCH</span></div>
+                <div class="slider-box">
+                    <div class="track-v"><input type="range" id="pitchB" class="c-slider-v" min="0.9" max="1.1" step="0.01" value="1.0" oninput="syncMixer()"></div>
+                    <span style="font-size:0.5rem">PITCH</span>
+                </div>
             </div>
         </div>
     </div>
@@ -106,126 +115,89 @@
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        let playerA, playerB, searchResults = [];
+        let pA, pB;
 
         function onYouTubeIframeAPIReady() {
-            const cfg = { height: '60', width: '60', playerVars: { 'autoplay': 0, 'controls': 0, 'disablekb': 1 } };
-            playerA = new YT.Player('playerA', { ...cfg, events: { 'onStateChange': (e) => syncUI('A', e.data), 'onReady': () => applySettings() } });
-            playerB = new YT.Player('playerB', { ...cfg, events: { 'onStateChange': (e) => syncUI('B', e.data), 'onReady': () => applySettings() } });
+            const opt = { height: '1', width: '1', playerVars: { 'controls': 0, 'disablekb': 1, 'origin': window.location.origin } };
+            pA = new YT.Player('playerA', { ...opt, events: { 'onStateChange': (e) => ui('A', e.data) } });
+            pB = new YT.Player('playerB', { ...opt, events: { 'onStateChange': (e) => ui('B', e.data) } });
         }
 
-        async function search() {
-            const btn = document.getElementById('search-btn');
+        async function runSearch() {
+            const sBtn = document.getElementById('s-btn');
             const q = document.getElementById('query').value;
             if(!q) return;
-            
-            btn.classList.add('loading');
-            btn.innerText = "LOADING...";
-            
+            sBtn.classList.add('loading-pulse');
+            sBtn.innerText = "...";
             try {
-                const res = await fetch('/search?q=' + encodeURIComponent(q));
-                searchResults = await res.json();
-                renderPage();
-            } catch(e) { console.error("Errore ricerca", e); }
-            finally { 
-                btn.classList.remove('loading'); 
-                btn.innerText = "CERCA";
-            }
+                const r = await fetch('/search?q=' + encodeURIComponent(q));
+                const data = await r.json();
+                document.getElementById('search-results').innerHTML = data.slice(0, 3).map(i => `
+                    <div class="result-card">
+                        <div style="height:20px; overflow:hidden;">${i.title.toUpperCase()}</div>
+                        <div style="display:flex; gap:2px;">
+                            <button class="load-btn" onclick="loadTrack('${i.id}', 'A', '${i.title.replace(/'/g,"")}')">LOAD A</button>
+                            <button class="load-btn" onclick="loadTrack('${i.id}', 'B', '${i.title.replace(/'/g,"")}')">LOAD B</button>
+                        </div>
+                    </div>`).join('');
+            } finally { sBtn.classList.remove('loading-pulse'); sBtn.innerText = "CERCA"; }
         }
 
-        function renderPage() {
-            const container = document.getElementById('search-results');
-            container.innerHTML = searchResults.slice(0, 3).map(item => `
-                <div class="result-card">
-                    <div style="height:25px; overflow:hidden;">${item.title.toUpperCase()}</div>
-                    <div style="display:flex; gap:2px;">
-                        <button class="load-btn" onclick="load('${item.id}', '${item.title.replace(/'/g,"")}', 'A')">LOAD A</button>
-                        <button class="load-btn" onclick="load('${item.id}', '${item.title.replace(/'/g,"")}', 'B')">LOAD B</button>
-                    </div>
-                </div>`).join('');
+        function loadTrack(id, d, title) {
+            const player = (d === 'A' ? pA : pB);
+            player.cueVideoById(id);
+            document.getElementById('t' + d).innerText = title.substring(0,20).toUpperCase();
+            document.getElementById('p' + d).style.backgroundImage = `url('https://img.youtube.com/vi/${id}/hqdefault.jpg')`;
+            setTimeout(syncMixer, 1000);
         }
 
-        function load(id, title, deck) {
-            const p = (deck === 'A' ? playerA : playerB);
-            p.cueVideoById(id);
-            document.getElementById('title-' + deck).innerText = title.substring(0, 20).toUpperCase();
-            document.getElementById('platter-' + deck).style.backgroundImage = `url('https://img.youtube.com/vi/${id}/hqdefault.jpg')`;
-            setTimeout(applySettings, 500); // Forza impostazioni dopo caricamento
-        }
-
-        function applySettings() {
-            if(!playerA || !playerB || typeof playerA.setVolume !== 'function') return;
-
+        function syncMixer() {
+            if(!pA || !pB || !pA.setVolume) return;
             const x = document.getElementById('xfader').value / 100;
-            const vA = document.getElementById('volA').value; 
-            const vB = document.getElementById('volB').value;
-            const pA = document.getElementById('pitchA').value;
-            const pB = document.getElementById('pitchB').value;
-
-            // Mixaggio
-            playerA.setVolume(vA * Math.min(1, (1-x)*2));
-            playerB.setVolume(vB * Math.min(1, x*2));
-            
-            // Pitch (Solo se il video è in play o caricato)
-            try {
-                playerA.setPlaybackRate(parseFloat(pA));
-                playerB.setPlaybackRate(parseFloat(pB));
-            } catch(e) {}
+            const vA = document.getElementById('volA').value * Math.min(1, (1-x)*2);
+            const vB = document.getElementById('volB').value * Math.min(1, x*2);
+            pA.setVolume(vA); pB.setVolume(vB);
+            if(pA.setPlaybackRate) pA.setPlaybackRate(parseFloat(document.getElementById('pitchA').value));
+            if(pB.setPlaybackRate) pB.setPlaybackRate(parseFloat(document.getElementById('pitchB').value));
         }
 
-        function toggleDeck(deck) {
-            const p = (deck === 'A' ? playerA : playerB);
-            const state = p.getPlayerState();
-            if(state === 1) p.pauseVideo();
-            else {
-                p.playVideo();
-                p.unMute(); // Essenziale per smartphone
-            }
-            applySettings();
+        function control(d) {
+            const player = (d === 'A' ? pA : pB);
+            player.getPlayerState() === 1 ? player.pauseVideo() : (player.unMute(), player.playVideo());
+            setTimeout(syncMixer, 200);
         }
 
-        function syncUI(deck, state) {
-            const platter = document.getElementById('platter-' + deck);
-            const btn = document.getElementById('btn-play-' + deck);
-            if(state === 1) { platter.classList.add('playing'); btn.classList.add('active'); btn.innerText = "STOP"; }
-            else { platter.classList.remove('playing'); btn.classList.remove('active'); btn.innerText = "START"; }
+        function ui(d, s) {
+            const plat = document.getElementById('p' + d);
+            const btn = document.getElementById('play' + d);
+            if(s === 1) { plat.classList.add('playing'); btn.classList.add('active'); btn.innerText = "STOP"; }
+            else { plat.classList.remove('playing'); btn.classList.remove('active'); btn.innerText = "START"; }
         }
 
-        function updateVU() {
-            const isA = (playerA && playerA.getPlayerState && playerA.getPlayerState() === 1) ? 1 : 0;
-            const isB = (playerB && playerB.getPlayerState && playerB.getPlayerState() === 1) ? 1 : 0;
-            const x = document.getElementById('xfader').value / 100;
-            
-            const levelA = isA * (document.getElementById('volA').value / 100) * Math.min(1, (1-x)*2);
-            const levelB = isB * (document.getElementById('volB').value / 100) * Math.min(1, x*2);
-            const total = (levelA + levelB) * (0.8 + Math.random() * 0.4);
+        function startJukebox() {
+            const d = document.documentElement;
+            if(d.requestFullscreen) d.requestFullscreen(); else if(d.webkitRequestFullscreen) d.webkitRequestFullscreen();
+            document.getElementById('mobile-overlay').style.display = 'none';
+            document.getElementById('app-ui').style.display = 'flex';
+            ['vuL', 'vuR'].forEach(id => document.getElementById(id).innerHTML = Array(20).fill('<div class="led"></div>').join(''));
+            setInterval(syncMixer, 800); // Polling costante per bloccare i volumi
+            loopVU();
+        }
 
-            ['vu-L', 'vu-R'].forEach(id => {
-                const leds = document.getElementById(id).querySelectorAll('.led');
-                leds.forEach((l, i) => {
-                    l.style.background = i < (total * 20) ? (i < 12 ? '#0f0' : (i < 17 ? '#ff0' : '#f00')) : 'var(--led-off)';
+        function loopVU() {
+            const sA = (pA && pA.getPlayerState && pA.getPlayerState() === 1) ? 1 : 0;
+            const sB = (pB && pB.getPlayerState && pB.getPlayerState() === 1) ? 1 : 0;
+            const vA = document.getElementById('volA').value / 100;
+            const vB = document.getElementById('volB').value / 100;
+            const tot = (sA * vA + sB * vB) * (0.8 + Math.random() * 0.4);
+            document.querySelectorAll('.vu-row').forEach(row => {
+                row.querySelectorAll('.led').forEach((l, i) => {
+                    l.style.background = i < (tot * 20) ? (i < 12 ? '#0f0' : (i < 17 ? '#ff0' : '#f00')) : '#111';
                 });
             });
-            requestAnimationFrame(updateVU);
+            requestAnimationFrame(loopVU);
         }
-
-        function launchDJ() {
-            const doc = window.document.documentElement;
-            if (doc.requestFullscreen) doc.requestFullscreen();
-            else if (doc.webkitRequestFullscreen) doc.webkitRequestFullscreen();
-
-            document.getElementById('mobile-overlay').style.display = 'none';
-            document.getElementById('console').style.display = 'flex';
-
-            // Inizializza LED
-            ['vu-L', 'vu-R'].forEach(id => {
-                document.getElementById(id).innerHTML = Array(20).fill('<div class="led"></div>').join('');
-            });
-
-            updateVU();
-            setInterval(applySettings, 1000); // Polling di sicurezza per i volumi
-        }
-        document.addEventListener('touchmove', (e) => { if(e.touches.length > 1) e.preventDefault(); }, {passive: false});
+        document.addEventListener('touchmove', e => { if(e.touches.length > 1) e.preventDefault(); }, {passive: false});
     </script>
 </body>
 </html>
