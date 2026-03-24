@@ -4,89 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>YOUTUBOX DJ - LANDSCAPE ONLY</title>
+    <title>YOUTUBOX DJ - FIXED</title>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
         :root { --amber: #ffb000; --bg: #050505; --panel: #0a0a0a; --silver: #cccccc; --led-off: #111; }
-        
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-        
-        body, html { 
-            background: var(--bg); color: var(--amber); font-family: 'VT323', monospace; 
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            overflow: hidden; position: fixed;
-        }
+        body, html { background: var(--bg); color: var(--amber); font-family: 'VT323', monospace; margin: 0; padding: 0; width: 100%; height: 100dvh; overflow: hidden; position: fixed; }
 
-        /* OVERLAY DI CONTROLLO ORIENTAMENTO */
-        #mobile-overlay {
-            position: fixed; inset: 0; background: #000; z-index: 10000;
-            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
-            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-        }
-
+        #mobile-overlay { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
         .phone-icon { width: 40px; height: 70px; border: 3px solid var(--amber); border-radius: 5px; animation: rotate 2s infinite ease-in-out; margin-bottom: 20px; }
         @keyframes rotate { 0% { transform: rotate(0deg); } 50% { transform: rotate(-90deg); } 100% { transform: rotate(-90deg); } }
+        #btn-fullscreen { display: none; background: var(--amber); color: #000; border: none; padding: 15px 30px; font-family: 'VT323'; font-size: 1.8rem; font-weight: bold; cursor: pointer; }
 
-        #btn-fullscreen {
-            display: none; background: var(--amber); color: #000; border: none; 
-            padding: 15px 30px; font-family: 'VT323'; font-size: 1.8rem; font-weight: bold; cursor: pointer;
-            box-shadow: 0 0 20px rgba(255, 176, 0, 0.4);
-        }
+        @media (orientation: portrait) { .phone-icon { display: block; } #btn-fullscreen { display: none; } }
+        @media (orientation: landscape) { .phone-icon { display: none; } #btn-fullscreen { display: block; } }
 
-        /* LOGICA VISIBILITÀ OVERLAY */
-        @media (orientation: portrait) {
-            .phone-icon { display: block; }
-            #btn-fullscreen { display: none; }
-            #instr { display: block; }
-        }
-        @media (orientation: landscape) {
-            .phone-icon { display: none; }
-            #btn-fullscreen { display: flex; align-items: center; justify-content: center; }
-            #instr { display: none; }
-        }
-
-        /* MAIN LAYOUT (Appare dopo AVVIA) */
-        .main-wrapper { 
-            display: none; flex-direction: column; align-items: center; 
-            width: 100%; height: 100%; 
-            padding: 5px env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-        }
-
-        /* RICERCA */
+        .main-wrapper { display: none; flex-direction: column; align-items: center; width: 100%; height: 100%; padding: 5px env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
         .search-container { width: 95%; background: #000; border: 1px solid #222; display: flex; padding: 4px 10px; margin-bottom: 5px; }
         input[type=text] { flex: 1; background: transparent; border: none; color: #fff; font-family: 'VT323'; font-size: 1rem; }
         .btn-search { background: var(--amber); border: none; padding: 0 15px; font-family: 'VT323'; cursor: pointer; }
-
         #search-results { width: 95%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-bottom: 5px; }
         .result-card { background: #0d0d0d; border: 1px solid #222; padding: 4px; height: 50px; display: flex; flex-direction: column; justify-content: space-between; }
-        .load-btn { background: #1a1a1a; color: var(--amber); border: 1px solid #333; font-family: 'VT323'; font-size: 0.65rem; padding: 2px; flex: 1; }
+        .load-btn { background: #1a1a1a; color: var(--amber); border: 1px solid #333; font-family: 'VT323'; font-size: 0.65rem; padding: 2px; flex: 1; cursor: pointer; }
 
-        /* DJ CONSOLE */
         .dj-setup { display: grid; grid-template-columns: 1.2fr 0.8fr 1.2fr; gap: 5px; width: 100%; flex: 1; }
         .deck { background: var(--panel); border: 1px solid #1a1a1a; display: flex; align-items: center; justify-content: space-around; padding: 5px; }
-
-        /* SLIDERS */
         .slider-track-v { position: relative; width: 30px; height: 100px; background: #000; border: 1px solid #222; display: flex; justify-content: center; }
-        .custom-slider-v { appearance: none; background: transparent; transform: rotate(-90deg); width: 100px; height: 30px; position: absolute; top: 35px; z-index: 5; margin: 0; }
+        .custom-slider-v { appearance: none; background: transparent; transform: rotate(-90deg); width: 100px; height: 30px; position: absolute; top: 35px; z-index: 5; margin: 0; cursor: pointer; }
         .custom-slider-v::-webkit-slider-thumb { appearance: none; width: 30px; height: 22px; background: var(--silver); }
 
-        /* MIXER CENTER */
         .mixer { display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .brand { font-size: 0.8rem; text-align: center; margin-bottom: 5px; }
-        .vu-container { width: 100%; height: 20px; border: 1px solid #222; padding: 2px; }
+        .vu-container { width: 100%; height: 18px; border: 1px solid #222; padding: 2px; background: #000; }
         .vu-row { display: flex; gap: 1px; height: 4px; margin: 1px 0; }
-        .led { flex: 1; background: var(--led-off); }
-        #xfader { width: 80%; appearance: none; height: 6px; background: #000; border: 1px solid #222; margin-top: 10px; }
+        .led { flex: 1; background: var(--led-off); height: 100%; }
+        #xfader { width: 80%; appearance: none; height: 6px; background: #000; border: 1px solid #222; margin-top: 10px; cursor: pointer; }
         #xfader::-webkit-slider-thumb { appearance: none; width: 35px; height: 22px; background: var(--silver); }
 
-        /* PIATTI */
-        .platter { width: 80px; height: 80px; border-radius: 50%; border: 4px solid #111; background-size: cover; animation: spin 3.33s linear infinite; animation-play-state: paused; }
+        .platter { width: 80px; height: 80px; border-radius: 50%; border: 4px solid #111; background-size: cover; animation: spin 3s linear infinite; animation-play-state: paused; }
         .platter.playing { animation-play-state: running; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .btn-play { width: 100%; padding: 4px; background: #111; color: #444; border: 1px solid #222; font-family: 'VT323'; font-size: 0.8rem; margin-top: 4px; }
+        .btn-play { width: 100%; padding: 4px; background: #111; color: #444; border: 1px solid #222; font-family: 'VT323'; font-size: 0.8rem; margin-top: 4px; cursor: pointer; }
         .btn-play.active { color: #0f0; border-color: #0f0; }
-
         .yt-hidden { position: absolute; top: -9999px; }
     </style>
 </head>
@@ -94,19 +53,15 @@
 
     <div id="mobile-overlay">
         <div class="phone-icon"></div>
-        <div id="instr">
-            <h2 style="margin:0">RUOTA IL TELEFONO</h2>
-            <p>L'app funziona solo in orizzontale</p>
-        </div>
+        <div id="instr"><h2>RUOTA IL TELEFONO</h2><p>Modalità orizzontale richiesta</p></div>
         <button id="btn-fullscreen" onclick="launchDJ()">AVVIA CONSOLE</button>
     </div>
 
     <div class="main-wrapper" id="console">
         <div class="search-container">
-            <input type="text" id="query" placeholder="CERCA MUSICA..." onkeypress="if(event.key==='Enter') search()">
+            <input type="text" id="query" placeholder="CERCA MUSICA...">
             <button class="btn-search" onclick="search()">CERCA</button>
         </div>
-
         <div id="search-results"></div>
 
         <div class="dj-setup">
@@ -202,48 +157,55 @@
         }
 
         function updateMixer() {
-            if(!playerA || !playerB) return;
+            if(!playerA || !playerB || !playerA.setVolume || !playerB.setVolume) return;
             const x = document.getElementById('xfader').value / 100;
             const volA = document.getElementById('faderA').value; 
             const volB = document.getElementById('faderB').value;
-            if(playerA.setVolume) playerA.setVolume(volA * Math.min(1, (1-x)*2));
-            if(playerB.setVolume) playerB.setVolume(volB * Math.min(1, x*2));
+            playerA.setVolume(volA * Math.min(1, (1-x)*2));
+            playerB.setVolume(volB * Math.min(1, x*2));
+        }
+
+        function updateVU() {
+            // Logica reale: si muove solo se in PLAY
+            const isA = (playerA && playerA.getPlayerState && playerA.getPlayerState() === 1) ? 1 : 0;
+            const isB = (playerB && playerB.getPlayerState && playerB.getPlayerState() === 1) ? 1 : 0;
+            
+            const fA = document.getElementById('faderA').value / 100;
+            const fB = document.getElementById('faderB').value / 100;
+            const x = document.getElementById('xfader').value / 100;
+
+            const levelA = isA * fA * Math.min(1, (1-x)*2);
+            const levelB = isB * fB * Math.min(1, x*2);
+            const total = (levelA + levelB) * (0.8 + Math.random() * 0.4); // Aggiunge vibrazione naturale
+
+            ['vu-L', 'vu-R'].forEach(id => {
+                const leds = document.getElementById(id).querySelectorAll('.led');
+                const numLeds = total * leds.length;
+                leds.forEach((l, i) => {
+                    l.style.background = i < numLeds ? (i < 12 ? '#0f0' : (i < 17 ? '#ff0' : '#f00')) : 'var(--led-off)';
+                });
+            });
+            requestAnimationFrame(updateVU);
         }
 
         function launchDJ() {
             const doc = window.document.documentElement;
-            
-            // Richiesta Fullscreen (Chrome/Android)
             if (doc.requestFullscreen) doc.requestFullscreen();
             else if (doc.webkitRequestFullscreen) doc.webkitRequestFullscreen();
 
-            // Nasconde l'overlay e mostra la console
             document.getElementById('mobile-overlay').style.display = 'none';
             document.getElementById('console').style.display = 'flex';
 
-            // Forza lo scroll per nascondere barra indirizzi iOS
-            window.scrollTo(0, 0);
-            setTimeout(() => { window.scrollTo(0, 1); }, 100);
-
-            // Inizializza VU Meter
-            ['vu-L', 'vu-R'].forEach(id => { 
-                document.getElementById(id).innerHTML = Array(20).fill('<div class="led"></div>').join(''); 
+            // Inizializza i LED del VU Meter
+            ['vu-L', 'vu-R'].forEach(id => {
+                document.getElementById(id).innerHTML = Array(20).fill('<div class="led"></div>').join('');
             });
-            
-            // Loop VU Meter
-            setInterval(() => {
-                const level = Math.random() * 20;
-                ['vu-L', 'vu-R'].forEach(id => {
-                    const leds = document.getElementById(id).querySelectorAll('.led');
-                    leds.forEach((l, i) => { l.style.background = i < level ? (i < 12 ? '#0f0' : '#f00') : 'var(--led-off)'; });
-                });
-            }, 100);
 
             updateMixer();
+            updateVU();
         }
-        
-        // Impedisce il trascinamento della pagina (importante per non far ricomparire l'URL bar)
-        document.addEventListener('touchmove', (e) => { e.preventDefault(); }, {passive: false});
+
+        document.addEventListener('touchmove', (e) => { if(e.touches.length > 1) e.preventDefault(); }, {passive: false});
     </script>
 </body>
 </html>
