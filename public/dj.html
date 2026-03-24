@@ -2,8 +2,10 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>YOUTUBOX DJ - FULLSCREEN CONSOLE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>YOUTUBOX DJ</title>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
         :root { --amber: #ffb000; --bg: #050505; --panel: #0a0a0a; --silver: #cccccc; --led-off: #111; }
@@ -11,113 +13,91 @@
         
         body, html { 
             background: var(--bg); color: var(--amber); font-family: 'VT323', monospace; 
-            margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
+            margin: 0; padding: 0; width: 100%; height: 100dvh; overflow: hidden; 
         }
 
-        /* MESSAGGIO ROTAZIONE */
-        #rotate-message {
-            display: none; position: fixed; inset: 0; background: #000; z-index: 10000;
-            flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px;
+        /* SCHERMATA INIZIALE / ROTAZIONE */
+        #mobile-overlay {
+            position: fixed; inset: 0; background: #000; z-index: 10000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
         }
-        .phone-icon { width: 50px; height: 80px; border: 3px solid var(--amber); border-radius: 5px; animation: rotate 2s infinite ease-in-out; position: relative; margin-bottom: 20px; }
-        .phone-icon::after { content: ''; position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); width: 10px; height: 10px; border-radius: 50%; background: var(--amber); }
+
+        .phone-icon { width: 40px; height: 70px; border: 3px solid var(--amber); border-radius: 5px; animation: rotate 2s infinite ease-in-out; margin-bottom: 20px; display: none; }
         @keyframes rotate { 0% { transform: rotate(0deg); } 50% { transform: rotate(-90deg); } 100% { transform: rotate(-90deg); } }
 
-        @media (orientation: portrait) and (max-width: 950px) {
-            #rotate-message { display: flex; }
+        #btn-fullscreen {
+            display: none; background: var(--amber); color: #000; border: none; 
+            padding: 20px 40px; font-family: 'VT323'; font-size: 2rem; font-weight: bold; cursor: pointer;
         }
 
+        /* Gestione stati Overlay */
+        @media (orientation: portrait) {
+            .phone-icon { display: block; }
+            #btn-fullscreen { display: none; }
+            #status-text { display: block; }
+        }
+        @media (orientation: landscape) {
+            .phone-icon { display: none; }
+            #btn-fullscreen { display: block; }
+            #status-text { display: none; }
+        }
+
+        /* LAYOUT DJ */
         .main-wrapper { display: flex; flex-direction: column; align-items: center; padding: 5px; width: 100%; height: 100%; }
 
-        /* RICERCA */
         .search-container { 
             width: 100%; max-width: 1100px; background: #000; padding: 5px 10px; 
-            border: 1px solid #222; display: flex; gap: 10px; margin-bottom: 8px; 
-            position: relative; overflow: hidden; 
+            border: 1px solid #222; display: flex; gap: 10px; margin-bottom: 5px; position: relative;
         }
-        .search-container.loading::after {
-            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 176, 0, 0.2), transparent);
-            animation: scan 2.5s infinite ease-in-out;
-        }
-        @keyframes scan { 0% { left: -100%; } 100% { left: 150%; } }
         input[type=text] { flex: 1; background: transparent; border: none; color: #fff; font-family: 'VT323'; font-size: 1.1rem; }
-        .btn-search { background: var(--amber); border: none; padding: 5px 15px; font-family: 'VT323'; font-weight: bold; font-size: 1rem; cursor: pointer; }
+        .btn-search { background: var(--amber); border: none; padding: 5px 15px; font-family: 'VT323'; cursor: pointer; }
 
-        /* RISULTATI */
-        #search-results { 
-            width: 100%; max-width: 1100px; display: grid; 
-            grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; 
-        }
-        .result-card { 
-            background: #0d0d0d; border: 1px solid #222; padding: 6px; height: 65px; 
-            display: flex; flex-direction: column; justify-content: space-between;
-            animation: fadeIn 0.5s ease forwards; opacity: 0;
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .load-btn { flex: 1; background: #1a1a1a; color: var(--amber); border: 1px solid #333; font-family: 'VT323'; cursor: pointer; font-size: 0.75rem; padding: 4px; }
+        #search-results { width: 100%; max-width: 1100px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-bottom: 5px; }
+        .result-card { background: #0d0d0d; border: 1px solid #222; padding: 5px; height: 55px; display: flex; flex-direction: column; justify-content: space-between; opacity: 0; animation: fadeIn 0.4s forwards; }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
 
-        /* CONSOLE */
-        .dj-setup { 
-            display: grid; grid-template-columns: 1.2fr 1fr 1.2fr; gap: 8px; 
-            background: #000; padding: 10px; border: 1px solid #1a1a1a; width: 100%; max-width: 1100px; flex: 1;
-        }
+        .dj-setup { display: grid; grid-template-columns: 1.2fr 0.8fr 1.2fr; gap: 5px; width: 100%; flex: 1; background: #000; border: 1px solid #1a1a1a; padding: 5px; }
+        .deck { background: var(--panel); display: flex; align-items: center; justify-content: space-around; padding: 5px; }
         
-        .deck { background: var(--panel); padding: 8px; border: 1px solid #151515; display: flex; align-items: center; justify-content: space-around; }
-        .deck-center { display: flex; flex-direction: column; align-items: center; }
-
         /* SLIDERS */
-        .slider-track-v { position: relative; width: 35px; height: 120px; background: #000; border: 1px solid #222; display: flex; justify-content: center; }
-        .v-label { position: absolute; top: -16px; font-size: 0.65rem; color: #444; width: 100%; text-align: center; }
-
-        .custom-slider-v { 
-            appearance: none; background: transparent; transform: rotate(-90deg); 
-            width: 120px; height: 35px; cursor: pointer; position: absolute; top: 42px; z-index: 5; margin: 0;
-        }
-        .custom-slider-v::-webkit-slider-thumb { appearance: none; width: 35px; height: 25px; background: var(--silver); border-radius: 0; border: none; }
+        .slider-track-v { position: relative; width: 35px; height: 110px; background: #000; border: 1px solid #222; display: flex; justify-content: center; }
+        .v-label { position: absolute; top: -15px; font-size: 0.6rem; color: #444; }
+        .custom-slider-v { appearance: none; background: transparent; transform: rotate(-90deg); width: 110px; height: 35px; position: absolute; top: 37px; z-index: 5; margin: 0; }
+        .custom-slider-v::-webkit-slider-thumb { appearance: none; width: 35px; height: 25px; background: var(--silver); border-radius: 0; }
 
         /* MIXER CENTER */
         .mixer { display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .brand-label { font-size: 1rem; color: var(--amber); text-align: center; line-height: 1; margin-bottom: 8px; letter-spacing: 1px; }
-        
-        .vu-container { width: 100%; background: #000; padding: 3px; border: 1px solid #222; margin-bottom: 8px; }
+        .brand-label { font-size: 0.85rem; color: var(--amber); text-align: center; margin-bottom: 5px; }
+        .vu-container { width: 100%; background: #000; padding: 2px; border: 1px solid #222; }
         .vu-row { display: flex; gap: 1px; height: 4px; margin: 2px 0; }
         .led { flex: 1; background: var(--led-off); }
-
-        #xfader { width: 100%; appearance: none; height: 8px; background: #000; border: 1px solid #222; margin-top: 15px; }
-        #xfader::-webkit-slider-thumb { appearance: none; width: 40px; height: 25px; background: var(--silver); border-radius: 0; cursor: pointer; }
+        #xfader { width: 90%; appearance: none; height: 8px; background: #000; border: 1px solid #222; margin-top: 15px; }
+        #xfader::-webkit-slider-thumb { appearance: none; width: 40px; height: 25px; background: var(--silver); border-radius: 0; }
 
         /* PIATTI */
-        .platter { 
-            width: 100px; height: 100px; border-radius: 50%; border: 5px solid #111; 
-            background-size: cover; background-position: center; 
-            animation: spin 3.33s linear infinite; animation-play-state: paused; 
-        }
+        .platter { width: 90px; height: 90px; border-radius: 50%; border: 5px solid #111; background-size: cover; animation: spin 3.33s linear infinite; animation-play-state: paused; }
         .platter.playing { animation-play-state: running; }
-        
-        .btn-play { width: 100%; padding: 6px; background: #111; color: #444; border: 1px solid #222; cursor: pointer; font-family: 'VT323'; font-size: 0.9rem; margin-top: 6px; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .btn-play { width: 100%; padding: 5px; background: #111; color: #444; border: 1px solid #222; font-family: 'VT323'; margin-top: 5px; cursor: pointer; }
         .btn-play.active { color: #0f0; border-color: #0f0; }
 
-        .yt-hidden { position: absolute; top: -9999px; left: -9999px; }
-        #overlay { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; }
+        .yt-hidden { position: absolute; top: -9999px; }
     </style>
 </head>
 <body>
 
-    <div id="rotate-message">
+    <div id="mobile-overlay">
         <div class="phone-icon"></div>
-        <h2>RUOTA IL DISPOSITIVO</h2>
-        <p>Entra in modalità orizzontale per mixare.</p>
-    </div>
-
-    <div id="overlay" onclick="unlock()">
-        <h1 style="font-size: 3rem; margin:0;">YOUTUBOX DJ</h1>
-        <p>[ TOCCA PER ATTIVARE CONSOLE ]</p>
+        <div id="status-text">
+            <h2 style="margin:0">RUOTA IL TELEFONO</h2>
+            <p>Usa la modalità orizzontale</p>
+        </div>
+        <button id="btn-fullscreen" onclick="startEngine()">AVVIA CONSOLE</button>
     </div>
 
     <div class="main-wrapper">
         <div class="search-container" id="search-bar">
-            <input type="text" id="query" placeholder="CERCA MUSICA..." onkeypress="if(event.key==='Enter') search()">
+            <input type="text" id="query" placeholder="CERCA TRACCIA..." onkeypress="if(event.key==='Enter') search()">
             <button class="btn-search" onclick="search()">CERCA</button>
         </div>
 
@@ -130,16 +110,16 @@
                     <input type="range" id="pitchA" class="custom-slider-v" min="0.9" max="1.1" step="0.01" value="1.0" oninput="updatePitch('A')">
                 </div>
                 <div class="deck-center">
-                    <div id="title-A" style="font-size:0.55rem; color:#0f0; background:#000; width:100%; padding:2px; text-align:center; margin-bottom:5px; height:15px; overflow:hidden;">A - STANDBY</div>
+                    <div id="title-A" style="font-size:0.5rem; color:#0f0; height:12px; overflow:hidden; margin-bottom:4px;">DECK A</div>
                     <div id="platter-A" class="platter"></div>
-                    <button id="btn-play-A" class="btn-play" onclick="toggleDeck('A')">START</button>
+                    <button id="btn-play-A" class="btn-play" onclick="toggleDeck('A')">PLAY</button>
                 </div>
             </div>
 
             <div class="mixer">
-                <div class="brand-label">YOUTUBOX<br>DJ</div>
+                <div class="brand-label">YOUTUBOX DJ</div>
                 <div class="vu-container"><div class="vu-row" id="vu-L"></div><div class="vu-row" id="vu-R"></div></div>
-                <div style="display:flex; gap:15px;">
+                <div style="display:flex; gap:12px; margin-top:8px;">
                     <div class="slider-track-v"><input type="range" id="faderA" class="custom-slider-v" min="0" max="100" value="100" oninput="updateMixer()"></div>
                     <div class="slider-track-v"><input type="range" id="faderB" class="custom-slider-v" min="0" max="100" value="100" oninput="updateMixer()"></div>
                 </div>
@@ -148,9 +128,9 @@
 
             <div class="deck">
                 <div class="deck-center">
-                    <div id="title-B" style="font-size:0.55rem; color:#0f0; background:#000; width:100%; padding:2px; text-align:center; margin-bottom:5px; height:15px; overflow:hidden;">B - STANDBY</div>
+                    <div id="title-B" style="font-size:0.5rem; color:#0f0; height:12px; overflow:hidden; margin-bottom:4px;">DECK B</div>
                     <div id="platter-B" class="platter"></div>
-                    <button id="btn-play-B" class="btn-play" onclick="toggleDeck('B')">START</button>
+                    <button id="btn-play-B" class="btn-play" onclick="toggleDeck('B')">PLAY</button>
                 </div>
                 <div class="slider-track-v">
                     <div class="v-label">PITCH</div>
@@ -164,7 +144,7 @@
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        let playerA, playerB, searchResults = [], currentPage = 0;
+        let playerA, playerB, searchResults = [];
 
         function onYouTubeIframeAPIReady() {
             playerA = new YT.Player('playerA', { events: { 'onStateChange': (e) => syncUI('A', e.data) } });
@@ -172,30 +152,23 @@
         }
 
         async function search() {
-            const bar = document.getElementById('search-bar');
             const q = document.getElementById('query').value;
             if(!q) return;
-            bar.classList.add('loading');
-            try {
-                const res = await fetch('/search?q=' + encodeURIComponent(q));
-                searchResults = await res.json();
-                currentPage = 0;
-                renderPage();
-            } catch(e) { console.error(e); }
-            finally { setTimeout(() => bar.classList.remove('loading'), 1000); }
+            const res = await fetch('/search?q=' + encodeURIComponent(q));
+            searchResults = await res.json();
+            renderPage();
         }
 
         function renderPage() {
             const container = document.getElementById('search-results');
-            const currentSet = searchResults.slice(currentPage * 3, (currentPage * 3) + 3);
             let html = '';
-            currentSet.forEach((item, i) => {
+            searchResults.slice(0, 3).forEach((item, i) => {
                 const t = item.title.replace(/'/g, "\\'");
-                html += `<div class="result-card" style="animation-delay: ${i*0.1}s">
-                    <div style="font-size:0.6rem; color:#fff; height:20px; overflow:hidden;">${item.title}</div>
-                    <div style="display:flex; gap:3px;">
-                        <button class="load-btn" onclick="load('${item.id}', '${t}', 'A')">LOAD A</button>
-                        <button class="load-btn" onclick="load('${item.id}', '${t}', 'B')">LOAD B</button>
+                html += `<div class="result-card" style="animation-delay:${i*0.1}s">
+                    <div style="font-size:0.55rem; color:#fff; height:15px; overflow:hidden;">${item.title}</div>
+                    <div style="display:flex; gap:2px;">
+                        <button class="btn-play" style="margin:0; font-size:0.6rem" onclick="load('${item.id}', '${t}', 'A')">LOAD A</button>
+                        <button class="btn-play" style="margin:0; font-size:0.6rem" onclick="load('${item.id}', '${t}', 'B')">LOAD B</button>
                     </div>
                 </div>`;
             });
@@ -238,33 +211,28 @@
         }
 
         function updateVU() {
-            const fA = document.getElementById('faderA').value / 100;
-            const fB = document.getElementById('faderB').value / 100;
-            const x = document.getElementById('xfader').value / 100;
             const isA = (playerA && playerA.getPlayerState && playerA.getPlayerState() === 1) ? 1 : 0;
             const isB = (playerB && playerB.getPlayerState && playerB.getPlayerState() === 1) ? 1 : 0;
-            let master = (isA * fA * Math.min(1, (1-x)*2) + isB * fB * Math.min(1, x*2)) * (Math.sin(Date.now() * 0.015) * 0.2 + 0.8);
-            ['vu-L', 'vu-R'].forEach((id, idx) => {
+            const level = (isA + isB) * 15;
+            ['vu-L', 'vu-R'].forEach(id => {
                 const leds = document.getElementById(id).querySelectorAll('.led');
-                const level = (idx === 0 ? master : master * 0.95) * 30;
-                leds.forEach((l, i) => { l.style.background = i < level ? (i < 18 ? '#0f0' : (i < 25 ? '#ff0' : '#f00')) : 'var(--led-off)'; });
+                leds.forEach((l, i) => { l.style.background = i < level ? (i < 10 ? '#0f0' : '#f00') : 'var(--led-off)'; });
             });
             requestAnimationFrame(updateVU);
         }
 
-        function unlock() { 
-            // Attiva Full Screen su Smartphone
+        function startEngine() {
             const doc = window.document.documentElement;
             if (doc.requestFullscreen) doc.requestFullscreen();
-            else if (doc.mozRequestFullScreen) doc.mozRequestFullScreen();
-            else if (doc.webkitRequestFullScreen) doc.webkitRequestFullScreen();
-            else if (doc.msRequestFullscreen) doc.msRequestFullscreen();
+            else if (doc.webkitRequestFullscreen) doc.webkitRequestFullscreen();
 
-            document.getElementById('overlay').style.display = 'none';
-            ['vu-L', 'vu-R'].forEach(id => { document.getElementById(id).innerHTML = Array(30).fill('<div class="led"></div>').join(''); });
+            document.getElementById('mobile-overlay').style.display = 'none';
+            ['vu-L', 'vu-R'].forEach(id => { document.getElementById(id).innerHTML = Array(20).fill('<div class="led"></div>').join(''); });
             updateVU();
-            updateMixer(); 
+            updateMixer();
         }
+        
+        document.addEventListener('touchmove', (e) => { if(e.touches.length > 1) e.preventDefault(); }, {passive: false});
     </script>
 </body>
 </html>
